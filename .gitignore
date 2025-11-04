@@ -26,5 +26,7 @@ dist-ssr
 # rust tauri
 ./src-tauri/target
 ./src-tauri/Cargo.lock
+./Cargo.lock
+/Cargo.lock
 
 .vscode
