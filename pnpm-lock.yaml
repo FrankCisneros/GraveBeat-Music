@@ -20,6 +20,12 @@ importers:
       '@tauri-apps/plugin-opener':
         specifier: ^2.5.2
         version: 2.5.2
+      '@tauri-apps/plugin-shell':
+        specifier: ^2.3.3
+        version: 2.3.3
+      '@tauri-apps/plugin-window':
+        specifier: 2.0.0-alpha.1
+        version: 2.0.0-alpha.1
       axios:
         specifier: ^1.13.1
         version: 1.13.1
@@ -423,6 +429,10 @@ packages:
     peerDependencies:
       vite: ^5.2.0 || ^6 || ^7
 
+  '@tauri-apps/api@2.0.0-alpha.6':
+    resolution: {integrity: sha512-ZMOc3eu9amwvkC6M69h3hWt4/EsFaAXmtkiw4xd2LN59/lTb4ZQiVfq2QKlRcu1rj3n/Tcr7U30ZopvHwXBGIg==}
+    engines: {node: '>= 14.6.0', npm: '>= 6.6.0', yarn: '>= 1.19.1'}
+
   '@tauri-apps/api@2.9.0':
     resolution: {integrity: sha512-qD5tMjh7utwBk9/5PrTA/aGr3i5QaJ/Mlt7p8NilQ45WgbifUNPyKWsA63iQ8YfQq6R8ajMapU+/Q8nMcPRLNw==}
 
@@ -499,6 +509,12 @@ packages:
 
   '@tauri-apps/plugin-opener@2.5.2':
     resolution: {integrity: sha512-ei/yRRoCklWHImwpCcDK3VhNXx+QXM9793aQ64YxpqVF0BDuuIlXhZgiAkc15wnPVav+IbkYhmDJIv5R326Mew==}
+
+  '@tauri-apps/plugin-shell@2.3.3':
+    resolution: {integrity: sha512-Xod+pRcFxmOWFWEnqH5yZcA7qwAMuaaDkMR1Sply+F8VfBj++CGnj2xf5UoialmjZ2Cvd8qrvSCbU+7GgNVsKQ==}
+
+  '@tauri-apps/plugin-window@2.0.0-alpha.1':
+    resolution: {integrity: sha512-dFOAgal/3Txz3SQ+LNQq0AK1EPC+acdaFlwPVB/6KXUZYmaFleIlzgxDVoJCQ+/xOhxvYrdQaFLefh0I/Kldbg==}
 
   '@tokenizer/inflate@0.2.7':
     resolution: {integrity: sha512-MADQgmZT1eKjp06jpI2yozxaU9uVs4GzzgSL+uEq7bVcJ9V1ZXQkeGNql1fsSI0gMy1vhvNTNbUqrx+pZfJVmg==}
@@ -1507,6 +1523,8 @@ snapshots:
       tailwindcss: 4.1.16
       vite: rolldown-vite@7.1.14(jiti@2.6.1)
 
+  '@tauri-apps/api@2.0.0-alpha.6': {}
+
   '@tauri-apps/api@2.9.0': {}
 
   '@tauri-apps/cli-darwin-arm64@2.9.2':
@@ -1559,6 +1577,14 @@ snapshots:
   '@tauri-apps/plugin-opener@2.5.2':
     dependencies:
       '@tauri-apps/api': 2.9.0
+
+  '@tauri-apps/plugin-shell@2.3.3':
+    dependencies:
+      '@tauri-apps/api': 2.9.0
+
+  '@tauri-apps/plugin-window@2.0.0-alpha.1':
+    dependencies:
+      '@tauri-apps/api': 2.0.0-alpha.6
 
   '@tokenizer/inflate@0.2.7':
     dependencies:

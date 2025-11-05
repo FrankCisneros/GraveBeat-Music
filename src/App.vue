@@ -38,6 +38,7 @@
           <option disabled>Theme</option>
           <option v-for="t in temas" :key="t" :value="t">{{ t }}</option>
         </select>
+        <button class="btn btn-outline btn-error" @click="closeApp">Close</button>
       </div>
     </nav>
 
@@ -182,7 +183,9 @@
 <script setup>
 import { ref, watch } from "vue"
 import PlayerControls from "./components/PlayerControls.vue"
+import { getCurrentWindow } from '@tauri-apps/api/window'
 
+const appWindow = getCurrentWindow()
 const temas = ["light", "dark", "cupcake", "winter", "night", "emerald", "forest", "dracula"]
 const temaActual = ref(localStorage.getItem("tema") || "cupcake")
 
@@ -190,6 +193,10 @@ watch(temaActual, (nuevo) => {
   document.documentElement.setAttribute("data-theme", nuevo)
   localStorage.setItem("tema", nuevo)
 })
+
+function closeApp() {
+  appWindow.close()
+}
 </script>
 
 <style scoped>
