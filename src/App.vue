@@ -183,9 +183,8 @@
 <script setup>
 import { ref, watch } from "vue"
 import PlayerControls from "./components/PlayerControls.vue"
-import { getCurrentWindow } from '@tauri-apps/api/window'
+import { getCurrentWindow } from '@tauri-apps/api/window';
 
-const appWindow = getCurrentWindow()
 const temas = ["light", "dark", "cupcake", "winter", "night", "emerald", "forest", "dracula"]
 const temaActual = ref(localStorage.getItem("tema") || "cupcake")
 
@@ -194,8 +193,8 @@ watch(temaActual, (nuevo) => {
   localStorage.setItem("tema", nuevo)
 })
 
-function closeApp() {
-  appWindow.close()
+async function closeApp() {
+  await getCurrentWindow().close();
 }
 </script>
 
