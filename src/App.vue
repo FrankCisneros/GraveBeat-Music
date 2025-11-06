@@ -58,7 +58,7 @@
             </router-link>
 
             <!-- Album -->
-            <router-link class="flex items-center space-x-3 p-3 rounded-lg hover:bg-base-200 transition-colors" to="/files">
+            <router-link class="flex items-center space-x-3 p-3 rounded-lg hover:bg-base-200 transition-colors" to="/album">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4M4 4l8 4 8-4M4 8l8 4 8-4m-8 4v8" />
               </svg>

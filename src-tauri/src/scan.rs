@@ -90,7 +90,7 @@ pub fn scan_folder(path: String) -> Vec<TrackMetadata> {
                 path: full_path,
                 title,
                 artist,
-                album,
+                album: album.or(Some("Desconocido".to_string())),
                 duration: duration_secs,
                 cover_data_url,
             })
