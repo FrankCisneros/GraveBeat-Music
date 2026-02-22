@@ -1,5 +1,20 @@
 @import "tailwindcss";
 
 @plugin "daisyui" {
-    themes: light, dark, cupcake, winter, night, emerald, corporate, forest, dracula;
+    themes: all;
+}
+
+body {
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+}
+
+/* Forzar renderizado de píxeles en toda la app */
+* {
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
 }

@@ -15,16 +15,33 @@ name = "distro_m_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
-tauri-build = { version = "2", features = [] }
+tauri-build = { version = "2.5.5", features = [] }
 
 [dependencies]
-tauri = { version = "2", features = [] }
-tauri-plugin-opener = "2"
+tauri = { version = "2.10.2", features = ["protocol-asset"] }
+tauri-plugin-opener = "2.5.3"
+tauri-plugin-fs = "2"
 serde = { version = "1", features = ["derive"] }
-serde_json = "1"
-tauri-plugin-fs = "2.0.0"
-lofty = "0.22.4"
+serde_json = "1.0.149"
+log = "0.4.29"
+walkdir = "2"
+rayon = "1.10"
+lofty = "0.23.1"
 base64 = "0.22.1"
-walkdir = "2.3"
-rayon = "1.5.1"
-log = "0.4.27"
+md5 = "0.8"
+hex = "0.4"
+tauri-plugin-sql = { version = "2.3.2", features = ["sqlite"] }
+sqlx = { version = "0.8", features = ["sqlite", "runtime-tokio-rustls"] }
+discord-rich-presence = "1.1.0"
+reqwest = { version = "0.13.2", features = ["blocking", "json"] }
+urlencoding = "2.1.3"
+
+[profile.dev]
+incremental = true # Compales only changed files
+codegen-units = 256 # Allow many parallel code generation units
+
+[profile.release]
+codegen-units = 1
+lto = true
+strip = true # Strip symbols from binary
+panic = "abort"

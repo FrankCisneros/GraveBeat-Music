@@ -1,111 +1,67 @@
 <template>
   <div class="p-4">
-    <h1 class="text-2xl font-bold mb-6">💿 Álbumes</h1>
-
-    <div class="flex gap-2 mb-6">
-      <input
-        v-model="dir"
-        class="input input-bordered flex-1 max-w-2xl"
-        placeholder="Ruta de carpeta (ej: C:\\Users\\gungr\\Music)"
-      />
-      <button class="btn btn-primary" @click="startScan" :disabled="loading">
-        {{ loading ? "Escaneando..." : "Escanear" }}
-      </button>
-    </div>
+    <!-- <h1 class="text-2xl font-bold mb-6">💿 Álbumes</h1> -->
 
     <div v-if="error" class="alert alert-error mb-4">
       <span>{{ error }}</span>
     </div>
 
-    <!-- Mostrar álbumes -->
-    <div v-if="Object.keys(albums).length" class="space-y-6">
-      <div
-        v-for="(tracks, albumName) in albums"
-        :key="albumName"
-        class="p-4 bg-base-100 rounded-lg shadow-sm"
-      >
-        <!-- Encabezado del álbum -->
-        <div class="flex items-center gap-4 mb-4">
-          <img
-            :src="tracks[0].cover_data_url || 'https://placehold.co/120x120'"
-            class="w-20 h-20 object-cover rounded"
-            alt="Carátula del álbum"
-          />
-          <div>
-            <h2 class="text-xl font-semibold">{{ albumName }}</h2>
-            <p class="text-sm text-gray-500">
-              {{ getArtists(tracks).join(', ') }}
-            </p>
-            <p class="text-xs text-gray-400">
-              {{ tracks.length }} canción{{ tracks.length !== 1 ? 'es' : '' }}
-            </p>
+    <div v-if="Object.keys(albums).length" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7 gap-6">
+
+      <div v-for="(albumTracks, albumName) in albums" :key="albumName" class="group cursor-pointer"
+        @click="goToAlbum(albumName)">
+
+        <div class="relative aspect-square overflow-hidden rounded-xl shadow-lg mb-3">
+          <img :src="coverSrc(albumTracks[0].cover_path)"
+            class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" alt="Carátula" />
+
+          <div
+            class="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+            <!-- <div class="text-white">
+              <span class="text-xl font-bold">Ver Álbum</span>
+            </div> -->
           </div>
         </div>
 
-        <!-- Lista de canciones -->
-        <div class="divide-y divide-base-300">
-          <div
-            v-for="track in tracks"
-            :key="track.path"
-            class="flex justify-between items-center py-2 px-2 hover:bg-base-200 rounded transition-colors"
-          >
-            <div class="truncate flex-1">
-              <div class="font-medium truncate">
-                {{ track.title || track.name || "Sin título" }}
-              </div>
-              <div class="text-xs text-gray-500 truncate">
-                {{ track.artist || "Artista desconocido" }}
-              </div>
-            </div>
-
-            <div class="flex items-center gap-2">
-              <span class="text-xs text-gray-500">
-                {{ formatDuration(track.duration) }}
-              </span>
-              <button
-                class="btn btn-circle btn-primary btn-xs"
-                @click="playTrack(track)"
-                title="Reproducir"
-              >
-                ▶
-              </button>
-            </div>
-          </div>
+        <div class="px-1">
+          <h2 class="font-bold truncate text-base" :title="albumName">
+            {{ albumName }}
+          </h2>
+          <p class="text-sm text-base-content/60 truncate">
+            {{ getArtists(albumTracks).join(', ') }}
+          </p>
         </div>
       </div>
     </div>
 
-    <!-- Estado vacío -->
-    <div v-else-if="!loading" class="text-center py-12 text-gray-500">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="h-16 w-16 mx-auto mb-4 text-gray-300"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"
-        />
+    <div v-else-if="!loading" class="text-center py-12 text-base-content/50">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto mb-4 opacity-30" fill="none" viewBox="0 0 24 24"
+        stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
       </svg>
-      <p>Ingresa una ruta y haz clic en "Escanear" para agrupar por álbum</p>
+      <p class="text-lg">No hay álbumes para mostrar.</p>
+      <p class="text-sm">Escanea tu biblioteca desde el inicio.</p>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from "vue"
-import { invoke } from "@tauri-apps/api/core"
+import { ref, computed, onMounted, watch } from "vue"
+import { invoke, convertFileSrc } from "@tauri-apps/api/core"
 
-const dir = ref("")
+import { useSettingsStore } from "../store/settings"
+import { usePlayerStore } from "../store/player"
+
 const tracks = ref([])
 const loading = ref(false)
 const error = ref("")
+const playerStore = usePlayerStore()
+const settingsStore = useSettingsStore()
 
-// Agrupar por álbum (clave: album)
+const PLACEHOLDER = "https://placehold.co/300x300?text=No+Cover"
+
+// Agrupar por álbum
 const albums = computed(() => {
   const grouped = {}
   for (const t of tracks.value) {
@@ -116,56 +72,36 @@ const albums = computed(() => {
   return grouped
 })
 
-async function startScan() {
-  if (!dir.value.trim()) {
-    error.value = "Por favor, ingresa una ruta válida."
-    return
-  }
-
-  loading.value = true
-  error.value = ""
-  tracks.value = []
-
+async function loadTracks() {
   try {
-    const result = await invoke("scan_folder", { path: dir.value })
-    console.log("Archivos escaneados:", result)
-    tracks.value = Array.isArray(result) ? result : []
-  } catch (err) {
-    console.error("Error al escanear carpeta:", err)
-    error.value = String(err)
-  } finally {
-    loading.value = false
+    tracks.value = await invoke("get_tracks", {
+      limit: 2000,
+      offset: 0,
+      profileId: settingsStore.activeProfileId
+    })
+  } catch {
+    error.value = "Error al cargar canciones"
   }
 }
 
+watch(() => settingsStore.activeProfileId, loadTracks)
+
 function getArtists(trackList) {
-  // Devuelve una lista única de artistas del álbum
-  const artists = new Set(
-    trackList.map((t) => t.artist || "Artista desconocido")
-  )
+  const artists = new Set(trackList.map((t) => t.artist || "Artista desconocido"))
   return Array.from(artists)
 }
 
-function formatDuration(seconds) {
-  if (!seconds || isNaN(seconds)) return "--:--"
-  const mins = Math.floor(seconds / 60)
-  const secs = Math.floor(seconds % 60)
-  return `${mins}:${secs.toString().padStart(2, "0")}`
+function coverSrc(path) {
+  return path ? convertFileSrc(path) : PLACEHOLDER
 }
 
-function playTrack(track) {
-  alert(
-    `Reproduciendo: ${track.title || track.name}\nArtista: ${
-      track.artist || "Desconocido"
-    }`
-  )
+import { useRouter } from "vue-router"
+
+const router = useRouter()
+
+function goToAlbum(albumName) {
+  router.push(`/album/${encodeURIComponent(albumName)}`)
 }
+
+onMounted(loadTracks)
 </script>
-
-<style scoped>
-.truncate {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-</style>
