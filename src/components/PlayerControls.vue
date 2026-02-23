@@ -1,5 +1,6 @@
 <template>
-    <div class="flex justify-between items-center px-4 py-3 bg-base-200 border-t border-base-300">
+    <div
+        class="flex justify-between items-center px-4 py-3 bg-linear-to-b from-base-100 to-base-200/50 border-t border-base-300">
         <!-- Sección izquierda: Info de la canción -->
         <div class="flex items-center space-x-4 w-1/4 min-w-0">
             <img class="w-14 h-14 rounded-md select-none pointer-events-none object-cover shadow-sm"
@@ -21,7 +22,7 @@
         <!-- Sección central: Controles principales -->
         <div class="flex flex-col items-center space-y-2 w-2/4">
             <div class="flex justify-center items-center space-x-3">
-                <button class="btn btn-ghost btn-sm hover:text-white hover:bg-transparent"
+                <button class="btn btn-ghost btn-sm hover:text-base-content hover:bg-transparent"
                     :class="player.shuffle ? 'text-primary' : 'text-gray-400'" @click="shuffle">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
@@ -30,7 +31,8 @@
                     </svg>
                 </button>
 
-                <button class="btn btn-ghost btn-sm text-gray-400 hover:text-white hover:bg-transparent"
+                <button
+                    class="btn btn-ghost btn-sm text-ghost border-0 hover:text-gray-400 hover:bg-transparent hover:border-0"
                     @click="previousTrack">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
@@ -40,21 +42,22 @@
 
                 <button class="btn btn-circle btn-sm bg-white text-black hover:bg-gray-200 border-0"
                     @click="togglePlay">
-                    <svg v-if="!isPlaying" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-0.5" viewBox="0 0 20 20"
+                    <svg v-if="!isPlaying" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" viewBox="0 0 24 24"
                         fill="currentColor">
                         <path fill-rule="evenodd"
-                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                            d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z"
                             clip-rule="evenodd" />
                     </svg>
-                    <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+                    <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24"
                         fill="currentColor">
                         <path fill-rule="evenodd"
-                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z"
+                            d="M6.75 5.25a.75.75 0 0 1 .75-.75H9a.75.75 0 0 1 .75.75v13.5a.75.75 0 0 1-.75.75H7.5a.75.75 0 0 1-.75-.75V5.25Zm7.5 0A.75.75 0 0 1 15 4.5h1.5a.75.75 0 0 1 .75.75v13.5a.75.75 0 0 1-.75.75H15a.75.75 0 0 1-.75-.75V5.25Z"
                             clip-rule="evenodd" />
                     </svg>
                 </button>
 
-                <button class="btn btn-ghost btn-sm text-gray-400 hover:text-white hover:bg-transparent"
+                <button
+                    class="btn btn-ghost btn-sm text-ghost border-0 hover:text-gray-400 hover:bg-transparent hover:border-0"
                     @click="nextTrack">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
@@ -62,7 +65,7 @@
                     </svg>
                 </button>
 
-                <button class="btn btn-ghost btn-sm hover:text-white hover:bg-transparent"
+                <button class="btn btn-ghost btn-sm hover:text-base-content hover:bg-transparent"
                     :class="player.repeat ? 'text-primary' : 'text-gray-400'" @click="repeat">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
@@ -75,8 +78,8 @@
             <div class="flex justify-center items-center w-full max-w-lg space-x-3">
                 <span class="text-xs text-gray-400 select-none">{{ formatTime(currentTime) }}</span>
                 <div class="relative w-full">
-                    <input type="range" min="0" :max="duration || 0" v-model="sliderValue" class="seekbar text-primary"
-                        @input="onSeekInput" @change="onSeekChange" />
+                    <input type="range" min="0" :max="duration || 0" v-model="sliderValue"
+                        class="seekbar text-primary w-full" @input="onSeekInput" @change="onSeekChange" />
                 </div>
                 <span class="text-xs text-gray-400 select-none">{{ formatTime(duration) }}</span>
             </div>
@@ -299,7 +302,7 @@ watch(currentTrack, (track) => {
     appearance: none;
     width: 100%;
     height: 4px;
-    background: #3f3f46;
+    background: var(--color-base-content);
     border-radius: 999px;
     cursor: pointer;
     overflow: hidden;
@@ -316,11 +319,11 @@ watch(currentTrack, (track) => {
     -webkit-appearance: none;
     height: 4px;
     width: 4px;
-    background: white;
+    background: currentColor;
     /* Thumb color */
     border-radius: 50%;
     cursor: pointer;
-    box-shadow: -100vw 0 0 100vw white;
+    box-shadow: -100vw 0 0 100vw currentColor;
     /* Trick for progress fill */
 }
 
@@ -381,10 +384,10 @@ watch(currentTrack, (track) => {
 
 /* La Seekbar ahora parece una barra de energía */
 .pixel-seekbar {
-    -webkit-appearance: none;
+    -webkit-appearance: button;
     width: 100%;
     height: 100%;
-    background: #3f3f46;
+    background: var(--color-base-content);
     cursor: pointer;
 }
 

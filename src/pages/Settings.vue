@@ -23,7 +23,7 @@
                 <div class="card bg-base-100 shadow-xl border border-base-200">
                     <div class="card-body">
                         <h2 class="card-title text-xl mb-4 flex items-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary" fill="none"
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-info" fill="none"
                                 viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1l-5 5h-5l5-5" />
@@ -37,11 +37,21 @@
                                 <h3 class="font-semibold">Escanear Biblioteca</h3>
                                 <p class="text-xs text-base-content/60">Actualiza tu lista de canciones</p>
                             </div>
-                            <button @click="scanAll" class="btn btn-primary" :disabled="loading">
-                                <span v-if="loading" class="loading loading-spinner loading-sm"></span>
-                                {{ loading ? 'Escaneando...' : 'Escanear Ahora' }}
-                            </button>
+                            <div class="flex">
+                                <button @click="scanAll" class="btn btn-outline btn-info" :disabled="loading">
+                                    <span v-if="loading" class="loading loading-spinner loading-sm text-white"></span>
+                                    {{ loading ? 'Escaneando...' : 'Escanear Ahora' }}
+                                </button>
+                                <button class="btn btn-outline btn-error ml-2" @click="clearLibrary">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                        stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
+                        
                         <div v-if="scanError" class="alert alert-error text-sm mb-4">
                             <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none"
                                 viewBox="0 0 24 24">
@@ -66,7 +76,7 @@
                             <div class="flex gap-2">
                                 <input ref="folderInput" type="file" webkitdirectory directory class="hidden"
                                     @change="handleFolderSelect" />
-                                <button @click="openFolderPicker" class="btn btn-outline gap-2 max-w-xs">
+                                <button @click="openFolderPicker" class="btn btn-outline btn-info gap-2 max-w-xs">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
                                         fill="currentColor">
                                         <path d="M2 6a2 2 0 012-2h12a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
@@ -101,9 +111,9 @@
                                 <span>Sin carpetas configuradas</span>
                             </div>
                             <div v-else v-for="(folder, index) in settingsStore.folders" :key="index"
-                                class="flex items-center justify-between p-3 hover:bg-base-100 rounded-lg transition-colors group">
+                                class="flex items-center justify-between p-3 hover:bg-base-500 rounded-lg transition-colors group">
                                 <div class="flex items-center gap-3 overflow-hidden">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-secondary shrink-0"
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-info shrink-0"
                                         viewBox="0 0 20 20" fill="currentColor">
                                         <path d="M2 6a2 2 0 012-2h12a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
                                     </svg>
@@ -131,7 +141,7 @@
                 <div class="card bg-base-100 shadow-xl border border-base-200">
                     <div class="card-body">
                         <h2 class="card-title text-xl mb-4 flex items-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-accent" fill="none"
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-info" fill="none"
                                 viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.5a2 2 0 00-1 .267V5a2 2 0 10-4 0v.75" />
@@ -151,8 +161,16 @@
                                         {{ theme }}
                                     </option>
                                 </select>
-                                <div class="w-10 h-10 rounded-lg shadow-sm border border-base-content/10"
-                                    :data-theme="settingsStore.theme" :class="'bg-base-100'"></div>
+
+                                <div class="bg-base-100 grid shrink-0 grid-cols-2 gap-1 rounded-md p-1 shadow-sm">
+                                    <div class="bg-base-content size-2 rounded-full"></div>
+                                    <div class="bg-primary size-2 rounded-full"></div>
+                                    <div class="bg-secondary size-2 rounded-full"></div>
+                                    <div class="bg-accent size-2 rounded-full"></div>
+                                </div>
+
+                                <!--<div class="w-10 h-10 rounded-lg shadow-sm border border-base-content/10 grid"
+                                    :data-theme="settingsStore.theme" :class="'bg-base-100'"></div> -->
                             </div>
                         </div>
                     </div>
@@ -162,7 +180,7 @@
                 <div class="card bg-base-100 shadow-xl border border-base-200">
                     <div class="card-body">
                         <h2 class="card-title text-xl mb-4 flex items-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-secondary" fill="none"
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-info" fill="none"
                                 viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V8m12 6a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V8m-6 12h.01M12 18a2 2 0 100-4m0 4a2 2 0 110-4" />
@@ -182,17 +200,6 @@
                                 <input type="checkbox" class="toggle toggle-primary" checked />
                                 <span class="label-text">Normalizar volumen</span>
                             </label>
-                        </div>
-
-                        <div class="form-control">
-                            <label class="label">
-                                <span class="label-text">Calidad de Audio</span>
-                            </label>
-                            <select class="select select-bordered select-sm w-full max-w-xs">
-                                <option>Alta (320kbps)</option>
-                                <option>Normal (128kbps)</option>
-                                <option>Baja (Ahorro de datos)</option>
-                            </select>
                         </div>
                     </div>
                 </div>

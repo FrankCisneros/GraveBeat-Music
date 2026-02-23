@@ -1,5 +1,5 @@
 <template>
-  <div class="p-4">
+  <div class="p-1">
     <!-- <h1 class="text-2xl font-bold mb-6">💿 Álbumes</h1> -->
 
     <div v-if="error" class="alert alert-error mb-4">

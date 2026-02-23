@@ -1,32 +1,30 @@
 <template>
-    <div class="group flex items-center justify-between p-2 rounded-sm hover:bg-base-200 transition-colors cursor-pointer select-none border-b border-base-200/50"
-        :class="{ 'bg-primary/10': isActive }" @click="handleClick">
+    <div class="group flex items-center px-4 py-2 rounded-sm hover:bg-base-200 transition-colors cursor-pointer select-none border-b border-base-200/50"
+        :class="{ 'bg-info/5': isActive }" @click="handleClick">
 
-        <!-- Left Section: Index/Play & Cover & Title/Artist -->
-        <div class="flex items-center gap-4 flex-1 min-w-0">
-            <!-- Index / Play Button -->
-            <div class="w-8 text-center shrink-0 text-sm font-mono opacity-60">
-                <span class="group-hover:hidden">{{ index + 1 }}</span>
-                <button class="hidden group-hover:flex items-center justify-center w-full h-full text-primary"
-                    @click.stop="$emit('play', track)">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd"
-                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
-                            clip-rule="evenodd" />
-                    </svg>
-                </button>
-            </div>
+        <!-- Column 1: # -->
+        <div
+            class="w-8 text-center shrink-0 text-sm font-mono opacity-60 relative h-8 flex items-center justify-center">
+            <span class="group-hover:hidden">{{ index + 1 }}</span>
+            <button class="hidden group-hover:flex items-center justify-center w-full h-full text-info absolute inset-0"
+                @click.stop="$emit('play', track)">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                        clip-rule="evenodd" />
+                </svg>
+            </button>
+        </div>
 
-            <!-- Cover Image (Optional) -->
-            <div v-if="showCover" class="w-10 h-10 rounded overflow-hidden shrink-0 shadow-sm relative">
+        <!-- Column 2: Cover & Title/Artist (flex-1 matches header pl-14) -->
+        <div class="flex-1 flex items-center min-w-0">
+            <div v-if="showCover" class="w-10 h-10 rounded overflow-hidden shrink-0 shadow-sm relative mr-4">
                 <img :src="coverSrc" class="w-full h-full object-cover" @error="handleImageError" loading="lazy"
                     decoding="async" />
                 <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
             </div>
-
-            <!-- Track Info -->
-            <div class="flex flex-col min-w-0">
-                <span class="font-medium text-sm truncate" :class="{ 'text-primary': isActive }">
+            <div class="flex flex-col min-w-0" :class="{ 'pl-14': !showCover }">
+                <span class="font-medium text-sm truncate" :class="{ 'text-info': isActive }">
                     {{ track.title || track.name || 'Sin título' }}
                 </span>
                 <span class="text-xs text-base-content/60 truncate group-hover:text-base-content/80 transition-colors">
@@ -35,15 +33,18 @@
             </div>
         </div>
 
-        <!-- Right Section: Album, Duration, Actions -->
-        <div class="flex items-center gap-4 shrink-0 pl-4">
-            <!-- Album (Hidden on small screens) -->
-            <span class="text-xs text-base-content/50 hidden md:block w-32 truncate text-right">
+        <!-- Column 3: Album (w-48) -->
+        <div class="hidden md:block w-52 truncate text-left pr-4 shrink-0">
+            <span class="text-xs text-base-content/50">
                 {{ track.album || '' }}
             </span>
+        </div>
 
+        <!-- Column 4: Duration & Actions (w-20) -->
+        <div class="w-20 flex items-center justify-end shrink-0 relative pe-1">
             <!-- Heart Button (Favorite) -->
-            <button class="btn btn-ghost btn-xs btn-circle opacity-0 group-hover:opacity-100 transition-opacity"
+            <button
+                class="btn btn-ghost btn-xs btn-circle opacity-0 group-hover:opacity-100 transition-opacity absolute right-18"
                 :class="{ 'opacity-100 text-error': isFavorite }" @click.stop="toggleFavorite">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" :fill="isFavorite ? 'currentColor' : 'none'"
                     viewBox="0 0 24 24" stroke="currentColor">
@@ -53,12 +54,14 @@
             </button>
 
             <!-- Duration -->
-            <span class="text-xs font-mono text-base-content/60 w-10 text-right">
+            <span
+                class="text-xs font-mono text-base-content/60 transition-transform duration-200 group-hover:-translate-x-7">
                 {{ formatDuration(track.duration) }}
             </span>
 
             <!-- Three Dots Menu -->
-            <button class="btn btn-ghost btn-xs btn-circle opacity-0 group-hover:opacity-100 transition-opacity"
+            <button
+                class="btn btn-ghost btn-xs btn-circle opacity-0 group-hover:opacity-100 transition-opacity absolute right-0"
                 @click.stop="openMenu">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">

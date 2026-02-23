@@ -1,5 +1,5 @@
 <template>
-    <div class="h-full flex flex-col p-6 overflow-y-auto">
+    <div class="h-full flex flex-col p-1 overflow-y-auto">
         <!-- Back Button -->
         <div class="mb-4">
             <button @click="router.back()" class="btn btn-ghost btn-sm gap-2 pl-0 hover:bg-transparent">
@@ -40,7 +40,7 @@
                     <!-- Action Buttons -->
                     <div class="flex gap-4 mt-2">
                         <button
-                            class="btn btn-primary btn-lg gap-2 rounded-full px-8 shadow-lg hover:scale-105 transition-transform"
+                            class="btn btn-info btn-lg gap-2 rounded-full px-8 shadow-lg hover:scale-105 transition-transform"
                             @click="playAlbum">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20"
                                 fill="currentColor">
@@ -61,7 +61,7 @@
                     class="flex items-center px-4 py-2 text-xs font-semibold text-base-content/100 uppercase tracking-wider border-b border-base-200">
                     <div class="w-8 text-center shrink-0">#</div>
                     <div class="flex-1 pl-4">Título</div>
-                    <div class="hidden md:block w-32 text-left pr-4">Artista</div>
+                    <div class="hidden md:block w-48 text-left pr-4">Artista</div>
                     <div class="w-20 text-right">Duración</div>
                 </div>
 

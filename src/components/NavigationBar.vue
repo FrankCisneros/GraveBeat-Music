@@ -1,5 +1,5 @@
 <template>
-    <nav data-tauri-drag-region class="navbar bg-base-200 min-h-14 h-14 p-0 shadow-md select-none drag-region">
+    <nav data-tauri-drag-region class="navbar bg-linear-to-b from-base-100 to-base-200/50 bg-base-100 min-h-14 h-14 p-0 shadow-md select-none drag-region">
 
         <!-- Left: Spacer for balance (or Logo in future) -->
         <div class="navbar-start flex-1 flex items-center gap-2 px-4">

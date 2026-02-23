@@ -6,10 +6,7 @@ export const useSettingsStore = defineStore("settings", () => {
     const folders = ref([])
     const theme = ref(localStorage.getItem("tema") || "cupcake")
     const availableThemes = ref([
-        "light", "dark", "cupcake", "winter", "night", "emerald",
-        "forest", "dracula", "garden", "aqua", "cartoon", "cyberpunk",
-        "halloween", "lemonade", "luxury", "nord", "sunset", "valentine",
-        "wireframe", "black"
+        "light", "dark", "night", "emerald", "dracula", "wireframe", "black", "cupcake", "winter", "VelvetMist", "NeonOverdrive", "TokyoNight", "TokyoNightGhost", "gaming", "neon-dark"
     ])
 
     const activeProfileId = ref(

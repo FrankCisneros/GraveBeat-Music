@@ -15,7 +15,7 @@
       <SongDetailsSidebar :visible="isDetailsVisible" :track="currentTrack" @close="isDetailsVisible = false" />
     </div>
 
-    <footer class="bg-base-300 border-t border-base-200 shrink-0 z-50">
+    <footer class="bg-linear-to-br from-base-100 to-base-300 border-t border-base-200 shrink-0 z-50">
       <PlayerControls />
     </footer>
 

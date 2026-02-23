@@ -15,7 +15,7 @@
                 </button>
             </div>
 
-            <div class="flex-1 overflow-y-auto custom-scroll p-6" v-if="track">
+            <div class="flex-1 overflow-y-auto custom-scroll p-2" v-if="track">
                 <!-- Cover Art -->
                 <div class="aspect-square w-full rounded-xl overflow-hidden shadow-xl mb-6 relative group">
                     <img :src="coverSrc"
@@ -24,45 +24,52 @@
                 </div>
 
                 <!-- Track Info -->
-                <div class="mb-8 text-center">
-                    <h2 class="text-2xl font-bold mb-1 leading-tight">{{ track.title || 'Sin Título' }}</h2>
-                    <p class="text-lg text-primary font-medium mb-1">{{ track.artist || 'Artista Desconocido' }}</p>
-                    <p class="text-sm text-base-content/60">{{ track.album }}</p>
+                <div class="mb-8 text-center px-1">
+                    <div class="marquee-container w-full overflow-hidden whitespace-nowrap mb-2">
+                        <h2 class="text-[1.6rem] font-bold leading-tight inline-block animate-marquee">{{ track.title ||
+                            'Sin Título' }}</h2>
+                    </div>
+                    <p class="text-xl text-primary font-medium mb-1 truncate">{{ track.artist || 'Artista Desconocido'
+                        }}</p>
                 </div>
 
                 <!-- Lyrics Section -->
                 <div class="bg-base-200/50 rounded-xl p-4">
-                    <h4 class="text-xs font-bold uppercase tracking-widest text-base-content/50 mb-4 text-center">Letra
+                    <!-- Scrollable Lyrics, with hidden scrollbar -->
+                    <h4 class="text-xs font-bold uppercase tracking-widest text-base-content/50 mb-4 text-center">
+                        Letra
                     </h4>
+                    <div class="max-h-72 overflow-y-auto no-scrollbar">
 
-                    <div v-if="loadingLyrics" class="flex justify-center p-4">
-                        <span class="loading loading-spinner text-primary"></span>
-                    </div>
-
-                    <div v-else-if="parsedLyrics.length > 0" class="flex flex-col items-center space-y-4">
-                        <div v-for="(line, index) in parsedLyrics" :key="index"
-                            class="text-center transition-all duration-300 px-4 py-2 rounded-lg" :class="{
-                                'text-primary font-bold text-xl scale-110 shadow-sm bg-base-100/50': activeLyricIndex === index,
-                                'text-base-content/60 font-medium text-base': activeLyricIndex !== index,
-                                'opacity-40': activeLyricIndex !== -1 && index < activeLyricIndex - 2,
-                                'opacity-60': activeLyricIndex !== -1 && (index === activeLyricIndex - 2 || index === activeLyricIndex - 1)
-                            }" :ref="el => { if (el) lyricRefs[index] = el; }">
-                            {{ line.text }}
+                        <div v-if="loadingLyrics" class="flex justify-center p-4">
+                            <span class="loading loading-spinner text-primary"></span>
                         </div>
-                    </div>
 
-                    <div v-else-if="lyrics"
-                        class="whitespace-pre-wrap text-center leading-relaxed opacity-80 font-medium font-sans">
-                        {{ lyrics }}
-                    </div>
+                        <div v-else-if="parsedLyrics.length > 0" class="flex flex-col items-center space-y-4">
+                            <div v-for="(line, index) in parsedLyrics" :key="index"
+                                class="text-center transition-all duration-300 px-4 py-2 rounded-lg" :class="{
+                                    'text-primary font-bold text-xl scale-110 shadow-sm bg-base-100/50': activeLyricIndex === index,
+                                    'text-base-content/60 font-medium text-base': activeLyricIndex !== index,
+                                    'opacity-40': activeLyricIndex !== -1 && index < activeLyricIndex - 2,
+                                    'opacity-60': activeLyricIndex !== -1 && (index === activeLyricIndex - 2 || index === activeLyricIndex - 1)
+                                }" :ref="el => { if (el) lyricRefs[index] = el; }">
+                                {{ line.text }}
+                            </div>
+                        </div>
 
-                    <div v-else class="text-center py-8 opacity-40">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto mb-2 opacity-50" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
-                        </svg>
-                        <p class="text-sm">No hay letra disponible</p>
+                        <div v-else-if="lyrics"
+                            class="whitespace-pre-wrap text-center leading-relaxed opacity-80 font-medium font-sans">
+                            {{ lyrics }}
+                        </div>
+
+                        <div v-else class="text-center py-8 opacity-40">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto mb-2 opacity-50"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                            </svg>
+                            <p class="text-sm">No hay letra disponible</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -202,5 +209,37 @@ watch(() => playerStore.currentTime, (time) => {
 
 .custom-scroll::-webkit-scrollbar-thumb:hover {
     background: #71717a;
+}
+
+/* Ocultar barra de scroll para las letras */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Animación Marquésina para el título */
+.marquee-container {
+    mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
+
+.animate-marquee {
+    display: inline-block;
+    padding-left: 100%;
+    animation: marquee 12s linear infinite;
+}
+
+@keyframes marquee {
+    0% {
+        transform: translate(0, 0);
+    }
+
+    100% {
+        transform: translate(-100%, 0);
+    }
 }
 </style>

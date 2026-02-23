@@ -15,7 +15,7 @@
                 class="flex items-center px-4 py-2 text-xs font-semibold text-base-content/50 uppercase tracking-wider border-b border-base-200">
                 <div class="w-8 text-center shrink-0">#</div>
                 <div class="flex-1 pl-14">Título / Artista</div>
-                <div class="hidden md:block w-32 text-right pr-4">Álbum</div>
+                <div class="hidden md:block w-48 text-left pr-4">Álbum</div>
                 <div class="w-20 text-right">Duración</div>
             </div>
 
