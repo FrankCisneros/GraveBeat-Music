@@ -38,20 +38,22 @@
                                 <p class="text-xs text-base-content/60">Actualiza tu lista de canciones</p>
                             </div>
                             <div class="flex">
-                                <button @click="scanAll" class="btn btn-outline btn-info" :disabled="loading">
-                                    <span v-if="loading" class="loading loading-spinner loading-sm text-white"></span>
-                                    {{ loading ? 'Escaneando...' : 'Escanear Ahora' }}
+                                <button @click="scanAll" class="btn btn-outline btn-info"
+                                    :disabled="settingsStore.isScanning">
+                                    <span v-if="settingsStore.isScanning"
+                                        class="loading loading-spinner loading-sm text-white"></span>
+                                    {{ settingsStore.isScanning ? 'Escaneando...' : 'Escanear Ahora' }}
                                 </button>
                                 <button class="btn btn-outline btn-error ml-2" @click="clearLibrary">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                                        stroke="currentColor">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                     </svg>
                                 </button>
                             </div>
                         </div>
-                        
+
                         <div v-if="scanError" class="alert alert-error text-sm mb-4">
                             <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none"
                                 viewBox="0 0 24 24">
@@ -74,9 +76,8 @@
                         <!-- Add Folder -->
                         <div class="form-control mb-4">
                             <div class="flex gap-2">
-                                <input ref="folderInput" type="file" webkitdirectory directory class="hidden"
-                                    @change="handleFolderSelect" />
-                                <button @click="openFolderPicker" class="btn btn-outline btn-info gap-2 max-w-xs">
+                                <button @click="openFolderPicker"
+                                    class="btn btn-outline btn-info gap-2 max-w-xs cursor-pointer">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
                                         fill="currentColor">
                                         <path d="M2 6a2 2 0 012-2h12a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
@@ -212,10 +213,10 @@
 import { ref, onMounted } from "vue"
 import { useSettingsStore } from "../store/settings"
 import { invoke } from "@tauri-apps/api/core"
+import { open } from "@tauri-apps/plugin-dialog"
 
 const settingsStore = useSettingsStore()
 const newFolderPath = ref("")
-const folderInput = ref(null)
 
 const loading = ref(false)
 const scanError = ref("")
@@ -225,29 +226,23 @@ onMounted(() => {
     settingsStore.loadFolders()
 })
 
-const openFolderPicker = () => {
-    // Attempt to trigger the file input
-    if (folderInput.value) {
-        folderInput.value.click();
-    }
-}
-
-const handleFolderSelect = (event) => {
-    const files = event.target.files
-    if (files && files.length > 0) {
-        const firstFile = files[0]
-        let folderPath = firstFile.webkitRelativePath || firstFile.path || ""
-
-        if (folderPath) {
-            folderPath = folderPath.substring(0, folderPath.lastIndexOf("/"))
-            // Cleanup path string if needed
-            if (folderPath) {
-                settingsStore.addFolder(folderPath)
+const openFolderPicker = async () => {
+    try {
+        const selected = await open({
+            directory: true,
+            multiple: false,
+            title: "Selecciona una carpeta de música"
+        });
+        if (selected) {
+            let pathToAdd = selected;
+            // Clean up trailing slash if exists natively
+            if (pathToAdd.endsWith("/") || pathToAdd.endsWith("\\")) {
+                pathToAdd = pathToAdd.slice(0, -1);
             }
+            settingsStore.addFolder(pathToAdd);
         }
-
-        // Reset input to allow selecting same folder again if needed
-        event.target.value = ''
+    } catch (e) {
+        console.error("Error seleccionando carpeta:", e);
     }
 }
 
@@ -263,30 +258,12 @@ const removeFolder = (folderPath) => {
 }
 
 const scanAll = async () => {
-    loading.value = true
     scanError.value = ""
     scanSuccess.value = false
 
     try {
-        await settingsStore.loadFolders()
-
-        let foundAny = false
-        // Escaneamos y guardamos por carpetas
-        for (const folder of settingsStore.folders) {
-            const result = await invoke("scan_folder", { path: folder })
-
-            if (result?.length) {
-                foundAny = true
-                await invoke("save_tracks", {
-                    tracks: result,
-                    profileId: settingsStore.activeProfileId
-                })
-            }
-        }
-
-        // Slight delay to show loading state
+        const foundAny = await settingsStore.performScan()
         setTimeout(() => {
-            loading.value = false
             if (foundAny) {
                 scanSuccess.value = true
                 setTimeout(() => scanSuccess.value = false, 3000)
@@ -294,11 +271,9 @@ const scanAll = async () => {
                 scanError.value = "No se encontraron canciones."
             }
         }, 500)
-
     } catch (err) {
         console.error(err)
         scanError.value = "Error durante el escaneo: " + err
-        loading.value = false
     }
 }
 </script>

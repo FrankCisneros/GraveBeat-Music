@@ -58,7 +58,7 @@
             <div class="bg-base-100/50 rounded-xl border border-base-200 shadow-inner overflow-hidden">
                 <!-- Header for the list -->
                 <div
-                    class="flex items-center px-4 py-2 text-xs font-semibold text-base-content/100 uppercase tracking-wider border-b border-base-200">
+                    class="flex items-center px-4 py-2 text-xs font-semibold text-base-content uppercase tracking-wider border-b border-base-200">
                     <div class="w-8 text-center shrink-0">#</div>
                     <div class="flex-1 pl-4">Título</div>
                     <div class="hidden md:block w-48 text-left pr-4">Artista</div>
@@ -67,7 +67,8 @@
 
                 <div class="flex flex-col">
                     <SongRow v-for="(song, index) in songs" :key="song.path" :track="song" :index="index"
-                        :show-cover="false" :is-active="isCurrentTrack(song)" @play="playSong(song)" />
+                        :show-cover="false" :is-active="isCurrentTrack(song)" :is-favorite="song.is_favorite"
+                        @play="playSong(song)" @toggleFavorite="toggleFavorite" />
                 </div>
             </div>
         </div>
@@ -136,6 +137,24 @@ function playSong(track) {
 
 function isCurrentTrack(track) {
     return player.currentTrack?.path === track.path
+}
+
+async function toggleFavorite(track) {
+    if (track.is_favorite) {
+        await invoke("remove_favorite", {
+            songId: track.id,
+            profileId: settings.activeProfileId
+        })
+        track.is_favorite = false
+    } else {
+        await invoke("add_favorite", {
+            songId: track.id,
+            profileId: settings.activeProfileId
+        })
+        track.is_favorite = true
+    }
+    // force reactivity if needed
+    songs.value = [...songs.value]
 }
 
 onMounted(loadSongs)

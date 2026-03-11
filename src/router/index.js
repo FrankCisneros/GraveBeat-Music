@@ -9,6 +9,8 @@ import ArtistDetails from "../pages/ArtistDetails.vue"
 import Favorites from "../pages/favorites.vue"
 import Test from "../pages/Test.vue"
 import Playlist from "../pages/Playlist.vue"
+import Search from "../pages/Search.vue"
+import RecentActivity from "../pages/RecentActivity.vue"
 
 const routes = [
     { path: "/", redirect: "/library" },
@@ -21,6 +23,8 @@ const routes = [
     { path: "/artists", component: Artists },
     { path: "/artists/:name", name: "ArtistDetails", component: ArtistDetails },
     { path: "/playlist/:id", component: Playlist },
+    { path: "/search", component: Search },
+    { path: "/recent", component: RecentActivity },
     { path: "/test", component: Test }
 ]
 

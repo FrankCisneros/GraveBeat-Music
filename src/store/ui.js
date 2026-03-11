@@ -7,10 +7,16 @@ export const useUIStore = defineStore('ui', () => {
         x: 0,
         y: 0,
         track: null,
-        items: []
+        items: [],
+        playlistId: null
     })
 
-    function showContextMenu(e, track, customItems = null) {
+    const playlistModal = ref({
+        visible: false,
+        track: null
+    })
+
+    function showContextMenu(e, track, customItems = null, playlistId = null) {
         e.preventDefault()
         e.stopPropagation()
 
@@ -34,7 +40,8 @@ export const useUIStore = defineStore('ui', () => {
             x,
             y,
             track,
-            items: customItems
+            items: customItems,
+            playlistId
         }
     }
 
@@ -42,9 +49,22 @@ export const useUIStore = defineStore('ui', () => {
         contextMenu.value.visible = false
     }
 
+    function showPlaylistModalAction(track) {
+        playlistModal.value.visible = true
+        playlistModal.value.track = track
+    }
+
+    function hidePlaylistModal() {
+        playlistModal.value.visible = false
+        playlistModal.value.track = null
+    }
+
     return {
         contextMenu,
+        playlistModal,
         showContextMenu,
-        hideContextMenu
+        hideContextMenu,
+        showPlaylistModalAction,
+        hidePlaylistModal
     }
 })

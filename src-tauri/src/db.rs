@@ -482,6 +482,24 @@ pub async fn delete_playlist(pool: State<'_, SqlitePool>, playlist_id: i32) -> R
 }
 
 #[tauri::command]
+pub async fn update_playlist(
+    pool: State<'_, SqlitePool>,
+    playlist_id: i32,
+    name: String,
+    cover_path: Option<String>,
+) -> Result<(), String> {
+    sqlx::query("UPDATE playlists SET name = ?, cover_path = ?, updated_at = strftime('%s','now') WHERE id = ?")
+        .bind(name)
+        .bind(cover_path)
+        .bind(playlist_id)
+        .execute(&*pool)
+        .await
+        .map_err(|e| e.to_string())?;
+
+    Ok(())
+}
+
+#[tauri::command]
 pub async fn add_song_to_playlist(
     pool: State<'_, SqlitePool>,
     playlist_id: i32,
@@ -531,6 +549,49 @@ pub async fn get_playlist_songs(
     )
     .bind(playlist_id)
     .bind(profile_id)
+    .fetch_all(&*pool)
+    .await
+    .map_err(|e| e.to_string())?;
+
+    let tracks = rows
+        .into_iter()
+        .map(|row| TrackMetadata {
+            id: row.get("id"),
+            name: row.get("name"),
+            path: row.get("path"),
+            title: row.get("title"),
+            artist: row.get("artist"),
+            album: row.get("album"),
+            duration: row.get("duration"),
+            cover_path: row.get("cover_path"),
+            is_favorite: Some(row.get("is_favorite")),
+        })
+        .collect();
+
+    Ok(tracks)
+}
+
+#[tauri::command]
+pub async fn search_tracks(
+    pool: State<'_, SqlitePool>,
+    profile_id: i32,
+    query: String,
+) -> Result<Vec<TrackMetadata>, String> {
+    let search_query = format!("%{}%", query);
+    let rows = sqlx::query(
+        r#"
+        SELECT s.id, s.name, s.path, s.title, s.artist, s.album, s.duration, s.cover_path,
+               EXISTS(SELECT 1 FROM favorites f WHERE f.song_id = s.id AND f.profile_id = s.profile_id) as is_favorite
+        FROM songs s
+        WHERE s.profile_id = ? AND (s.title LIKE ? OR s.artist LIKE ? OR s.album LIKE ?)
+        ORDER BY s.title ASC
+        LIMIT 50
+        "#,
+    )
+    .bind(profile_id)
+    .bind(&search_query)
+    .bind(&search_query)
+    .bind(&search_query)
     .fetch_all(&*pool)
     .await
     .map_err(|e| e.to_string())?;

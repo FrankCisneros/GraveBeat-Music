@@ -9,12 +9,12 @@
         </div>
 
         <div v-if="tracks.length"
-            class="flex-1 min-h-0 bg-base-100/50 rounded-xl border border-base-200 shadow-inner overflow-hidden">
+            class="flex-1 min-h-0 bg-base-100/50 rounded-xl border border-base-200 shadow-inner overflow-hidden pb-18">
             <!-- Header for the list -->
             <div
                 class="flex items-center px-4 py-2 text-xs font-semibold text-base-content/50 uppercase tracking-wider border-b border-base-200">
                 <div class="w-8 text-center shrink-0">#</div>
-                <div class="flex-1 pl-1">Título / Artista</div>
+                <div class="flex-1 pl-5">Título / Artista</div>
                 <div class="hidden md:block w-48 text-left">Álbum</div>
                 <div class="w-20 text-right">Duración</div>
             </div>

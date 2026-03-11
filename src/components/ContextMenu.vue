@@ -19,34 +19,27 @@
             Reproducir siguiente
         </button>
 
-        <!-- Add to Playlist Submenu -->
-        <div class="relative group">
-            <button
-                class="w-full text-left px-4 py-2 hover:bg-primary hover:text-primary-content text-sm transition-colors flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                    </svg>
-                    Agregar a Playlist
-                </div>
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
-            </button>
-            <div
-                class="absolute top-0 left-full ml-1 w-48 bg-base-200 border border-base-300 shadow-xl rounded-lg overflow-hidden hidden group-hover:block z-50 max-h-64 overflow-y-auto custom-scroll">
-                <div v-if="playlists.length === 0" class="px-4 py-2 text-xs opacity-50">
-                    No hay playlists
-                </div>
-                <button v-for="pl in playlists" :key="pl.id"
-                    class="w-full text-left px-4 py-2 hover:bg-primary hover:text-primary-content text-sm transition-colors truncate"
-                    @click.stop="addToPlaylist(pl.id)">
-                    {{ pl.name }}
-                </button>
-            </div>
-        </div>
+        <!-- Add to Playlist Button -->
+        <button
+            class="text-left px-4 py-2 hover:bg-primary hover:text-primary-content text-sm transition-colors flex items-center gap-2"
+            @click="action('showPlaylistModal')">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Agregar a Playlist
+        </button>
+
+        <button v-if="uiStats.playlistId"
+            class="text-left px-4 py-2 hover:bg-error hover:text-error-content text-sm transition-colors flex items-center gap-2"
+            @click="action('removeFromPlaylist')">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+            Eliminar de esta Playlist
+        </button>
 
         <div class="divider my-0"></div>
 
@@ -120,8 +113,22 @@ const action = (type) => {
 
     switch (type) {
         case 'playNext':
-            // Implement queue logic
-            console.log("Play Next", track);
+            if (track) playerStore.addNext(track);
+            break;
+        case 'showPlaylistModal':
+            if (track) uiStore.showPlaylistModalAction(track);
+            break;
+        case 'removeFromPlaylist':
+            if (track && uiStats.value.playlistId) {
+                invoke("remove_song_from_playlist", {
+                    playlistId: uiStats.value.playlistId,
+                    songId: track.id
+                }).then(() => {
+                    window.dispatchEvent(new CustomEvent('song-removed-from-playlist', { detail: { songId: track.id, playlistId: uiStats.value.playlistId } }));
+                }).catch(e => {
+                    console.error("Error al eliminar", e);
+                });
+            }
             break;
         case 'addToQueue':
             console.log("Queue", track);

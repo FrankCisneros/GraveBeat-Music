@@ -13,6 +13,11 @@ export const useSettingsStore = defineStore("settings", () => {
         parseInt(localStorage.getItem("profileId")) || 1
     )
 
+    const isScanning = ref(false)
+    const scanProgress = ref(0)
+    const scanTotal = ref(0)
+    const scanMessage = ref("")
+
     function setTheme(newTheme) {
         theme.value = newTheme
         localStorage.setItem("tema", newTheme)
@@ -43,6 +48,44 @@ export const useSettingsStore = defineStore("settings", () => {
         loadFolders()
     }
 
+    async function performScan() {
+        if (isScanning.value) return;
+        isScanning.value = true;
+        scanProgress.value = 0;
+        scanTotal.value = 0;
+        scanMessage.value = "Iniciando escaneo...";
+
+        const { listen } = await import('@tauri-apps/api/event');
+        const unlisten = await listen('scan-progress', (event) => {
+            scanProgress.value = event.payload.current;
+            scanTotal.value = event.payload.total;
+        });
+
+        try {
+            await loadFolders();
+            let foundAny = false;
+            for (const folder of folders.value) {
+                scanMessage.value = `Escaneando ${folder}`;
+                const result = await invoke("scan_folder", { path: folder });
+                if (result?.length) {
+                    foundAny = true;
+                    await invoke("save_tracks", {
+                        tracks: result,
+                        profileId: activeProfileId.value
+                    });
+                }
+            }
+            localStorage.setItem(`lastScan_${activeProfileId.value}`, Math.floor(Date.now() / 1000).toString());
+            return foundAny;
+        } catch (e) {
+            console.error(e);
+            throw e;
+        } finally {
+            isScanning.value = false;
+            unlisten();
+        }
+    }
+
     return {
         activeProfileId,
         folders,
@@ -52,6 +95,11 @@ export const useSettingsStore = defineStore("settings", () => {
         addFolder,
         removeFolder,
         setTheme,
-        availableThemes
+        availableThemes,
+        isScanning,
+        scanProgress,
+        scanTotal,
+        scanMessage,
+        performScan
     }
 })

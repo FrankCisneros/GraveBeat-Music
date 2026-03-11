@@ -20,7 +20,9 @@ struct DiscordState {
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_fs::init())
+        .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .setup(|app| {
             use tauri::async_runtime::block_on;
             // let start = std::time::Instant::now();
@@ -75,10 +77,14 @@ pub fn run() {
             db::create_playlist,
             db::get_playlists,
             db::delete_playlist,
+            db::update_playlist,
             db::add_song_to_playlist,
             db::remove_song_from_playlist,
             db::get_playlist_songs,
+            db::search_tracks,
             theaudiodb::fetch_artist_image,
+            scan::save_lyrics,
+            scan::is_folder_modified,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri app");

@@ -41,7 +41,8 @@
 
         <div class="flex flex-col">
           <SongRow v-for="(song, index) in songs" :key="song.path" :track="song" :index="index"
-            :is-active="playerStore.currentTrack?.path === song.path" @play="playSong(song)" />
+            :is-active="playerStore.currentTrack?.path === song.path" :is-favorite="song.is_favorite"
+            @play="playSong(song)" @toggleFavorite="toggleFavorite(song)" />
         </div>
       </div>
     </div>
@@ -53,8 +54,9 @@ import { onMounted, computed, ref, watch } from 'vue';
 import { useArtistsStore } from '../store/artists';
 import { usePlayerStore } from '../store/player';
 import { useRouter, useRoute } from 'vue-router';
-import { convertFileSrc } from '@tauri-apps/api/core';
+import { convertFileSrc, invoke } from '@tauri-apps/api/core';
 import SongRow from '../components/SongRow.vue';
+import { useSettingsStore } from '../store/settings';
 
 const route = useRoute();
 const router = useRouter();
@@ -94,12 +96,25 @@ const goBack = () => {
 };
 
 const playSong = (song) => {
-  // Play this song and set the context? 
-  // Usually we set the playlist to be the artist's songs
-  // But setting the whole list implies replacing queue.
-  // For now, simple play.
   playerStore.play(song);
-  // Ideally: playerStore.setQueue(songs.value, index)
+};
+
+const toggleFavorite = async (track) => {
+  const settings = useSettingsStore();
+  if (track.is_favorite) {
+    await invoke("remove_favorite", {
+      songId: track.id,
+      profileId: settings.activeProfileId
+    })
+    track.is_favorite = false
+  } else {
+    await invoke("add_favorite", {
+      songId: track.id,
+      profileId: settings.activeProfileId
+    })
+    track.is_favorite = true
+  }
+  artistStore.artists = [...artistStore.artists] // trigger reactivity just in case
 };
 
 const getCover = (path) => {

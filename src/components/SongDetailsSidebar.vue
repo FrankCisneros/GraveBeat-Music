@@ -30,7 +30,7 @@
                             'Sin Título' }}</h2>
                     </div>
                     <p class="text-xl text-primary font-medium mb-1 truncate">{{ track.artist || 'Artista Desconocido'
-                        }}</p>
+                    }}</p>
                 </div>
 
                 <!-- Lyrics Section -->
@@ -39,6 +39,20 @@
                     <h4 class="text-xs font-bold uppercase tracking-widest text-base-content/50 mb-4 text-center">
                         Letra
                     </h4>
+
+                    <div class="flex justify-center mb-4" v-if="rawLyrics">
+                        <button @click="saveLyrics" class="btn btn-xs btn-outline btn-info gap-2"
+                            :disabled="savingLyrics">
+                            <span v-if="savingLyrics" class="loading loading-spinner loading-xs"></span>
+                            <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                            </svg>
+                            Guardar .lrc
+                        </button>
+                    </div>
+
                     <div class="max-h-72 overflow-y-auto no-scrollbar">
 
                         <div v-if="loadingLyrics" class="flex justify-center p-4">
@@ -103,6 +117,8 @@ const parsedLyrics = ref([]);
 const activeLyricIndex = ref(-1);
 const lyricRefs = ref({});
 const loadingLyrics = ref(false);
+const rawLyrics = ref(null);
+const savingLyrics = ref(false);
 
 const coverSrc = computed(() => {
     return props.track?.cover_path ? convertFileSrc(props.track.cover_path) : PLACEHOLDER;
@@ -112,6 +128,7 @@ const fetchLyrics = async () => {
     if (!props.track) return;
 
     lyrics.value = null;
+    rawLyrics.value = null;
     loadingLyrics.value = true;
 
     try {
@@ -119,6 +136,7 @@ const fetchLyrics = async () => {
         const localLyrics = await invoke('get_lyrics', { path: props.track.path });
         if (localLyrics) {
             lyrics.value = localLyrics;
+            rawLyrics.value = localLyrics;
             return;
         }
 
@@ -133,12 +151,13 @@ const fetchLyrics = async () => {
         });
 
         if (response.data && (response.data.syncedLyrics || response.data.plainLyrics)) {
-            const rawLyrics = response.data.syncedLyrics || response.data.plainLyrics;
-            lyrics.value = rawLyrics;
-            parsedLyrics.value = parseLyrics(rawLyrics);
-            if (parsedLyrics.value.length === 0 && rawLyrics) {
+            const raw = response.data.syncedLyrics || response.data.plainLyrics;
+            rawLyrics.value = raw;
+            lyrics.value = raw;
+            parsedLyrics.value = parseLyrics(raw);
+            if (parsedLyrics.value.length === 0 && raw) {
                 // Not synced
-                lyrics.value = rawLyrics;
+                lyrics.value = raw;
             } else {
                 lyrics.value = null; // Hide plain lyrics if synced exist
             }
@@ -151,8 +170,23 @@ const fetchLyrics = async () => {
         console.warn("Lyrics fetch failed", e);
         lyrics.value = "No se pudo cargar la letra.";
         parsedLyrics.value = [];
+        rawLyrics.value = null;
     } finally {
         loadingLyrics.value = false;
+    }
+};
+
+const saveLyrics = async () => {
+    if (!props.track || !rawLyrics.value) return;
+    savingLyrics.value = true;
+    try {
+        await invoke('save_lyrics', { trackPath: props.track.path, lyrics: rawLyrics.value });
+        // Optional: you could show a brief toast or notification
+    } catch (e) {
+        console.error("Failed to save lyrics", e);
+        alert("Error al guardar la letra: " + e);
+    } finally {
+        savingLyrics.value = false;
     }
 };
 

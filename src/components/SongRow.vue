@@ -4,7 +4,7 @@
 
         <!-- Column 1: # -->
         <div
-            class="w-8 text-center shrink-0 text-sm font-mono opacity-60 relative h-8 flex items-center justify-center">
+            class="w-12 text-center shrink-0 text-sm font-mono opacity-60 relative h-8 flex items-center justify-center">
             <span class="group-hover:hidden">{{ index + 1 }}</span>
             <button class="hidden group-hover:flex items-center justify-center w-full h-full text-info absolute inset-0"
                 @click.stop="$emit('play', track)">
@@ -41,7 +41,7 @@
         </div>
 
         <!-- Column 4: Duration & Actions (w-20) -->
-        <div class="w-20 flex items-center justify-end shrink-0 relative pe-1">
+        <div class="w-28 flex items-center justify-end shrink-0 relative pe-1">
             <!-- Heart Button (Favorite) -->
             <button
                 class="btn btn-ghost btn-xs btn-circle opacity-0 group-hover:opacity-100 transition-opacity absolute right-18"
@@ -83,7 +83,8 @@ const props = defineProps({
     index: { type: Number, default: 0 },
     showCover: { type: Boolean, default: true },
     isActive: { type: Boolean, default: false },
-    isFavorite: { type: Boolean, default: false }
+    isFavorite: { type: Boolean, default: false },
+    playlistId: { type: Number, default: null }
 });
 
 const emit = defineEmits(['play', 'toggleFavorite', 'playNext', 'addToQueue', 'showDetails']);
@@ -116,6 +117,6 @@ function handleClick(e) {
 }
 
 function openMenu(e) {
-    uiStore.showContextMenu(e, props.track);
+    uiStore.showContextMenu(e, props.track, null, props.playlistId);
 }
 </script>

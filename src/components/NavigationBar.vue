@@ -1,21 +1,22 @@
 <template>
-    <nav data-tauri-drag-region class="navbar bg-linear-to-b from-base-100 to-base-200/50 bg-base-100 min-h-14 h-14 p-0 shadow-md select-none drag-region">
+    <nav data-tauri-drag-region
+        class="navbar bg-linear-to-b from-base-100 to-base-200/50 bg-base-100 min-h-14 h-14 p-0 shadow-md select-none drag-region relative z-50">
 
         <!-- Left: Spacer for balance (or Logo in future) -->
         <div class="navbar-start flex-1 flex items-center gap-2 px-4">
             <!-- Optional: App Title could go here -->
-            <img src="@/assets/icon.png" class="w-8 h-8 rounded-full"/>
+            <!-- <img src="@/assets/icon.png" class="w-8 h-8 rounded-full" />
             <span class="ml-4 text-xs font-bold opacity-40 uppercase tracking-widest hidden lg:block">
                 Distro Music Player
-            </span>
+            </span> -->
         </div>
 
         <!-- Center: Search Bar (Wider) -->
         <div class="navbar-center flex-2 w-full max-w-3xl px-4">
             <div class="join w-full shadow-sm">
-                <input type="text" placeholder="Buscar música..."
+                <input type="text" placeholder="Buscar música..." v-model="searchQuery" @keyup.enter="performSearch"
                     class="input input-sm w-full join-item focus:outline-none bg-base-100/50 focus:bg-base-100 transition-all text-center focus:text-left" />
-                <button class="btn btn-sm join-item btn-ghost bg-base-100/50 hover:bg-base-100">
+                <button class="btn btn-sm join-item btn-ghost bg-base-100/50 hover:bg-base-100" @click="performSearch">
                     <svg class="h-4 w-4 opacity-70" viewBox="0 0 24 24">
                         <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
@@ -28,7 +29,7 @@
 
             <!-- User Profile -->
             <div class="dropdown dropdown-end">
-                <button tabindex="0" class="btn btn-ghost btn-circle btn-sm avatar">
+                <button tabindex="0" class="btn btn-ghost btn-circle btn-sm avatar z-50">
                     <div
                         class="w-8 rounded-full bg-neutral text-neutral-content ring ring-base-300 ring-offset-base-100 ring-offset-1">
                         <img v-if="activeProfile?.avatar_path" :src="getProfileImage(activeProfile.avatar_path)" />
@@ -122,6 +123,9 @@ import { useSettingsStore } from "../store/settings";
 const appWindow = getCurrentWindow();
 const settingsStore = useSettingsStore();
 
+import { useRouter } from 'vue-router';
+const router = useRouter();
+
 // Props para recibir el tema del padre
 const props = defineProps(["modelValue", "temas"]);
 const emit = defineEmits(["update:modelValue"]);
@@ -129,6 +133,13 @@ const emit = defineEmits(["update:modelValue"]);
 const profiles = ref([]);
 const activeProfile = ref(null);
 const addProfileModalRef = ref(null);
+const searchQuery = ref('');
+
+const performSearch = () => {
+    if (searchQuery.value.trim()) {
+        router.push({ path: '/search', query: { q: searchQuery.value.trim() } });
+    }
+};
 
 // Sincronizar el select con el padre
 const internalTema = computed({

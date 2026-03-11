@@ -3,9 +3,10 @@
         <!-- Encabezado de la Playlist -->
         <div class="flex items-end gap-6 mb-8 shrink-0">
             <div
-                class="w-48 h-48 bg-base-300 rounded-xl shadow-2xl flex items-center justify-center overflow-hidden shrink-0 group">
-                <!-- Se podría poner portada de la primera canción, o icono -->
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-20 h-20 text-base-content/20" fill="none"
+                class="w-48 h-48 bg-base-300 rounded-xl shadow-2xl flex items-center justify-center overflow-hidden shrink-0 group relative">
+                <img v-if="playlist?.cover_path" :src="convertFileSrc(playlist.cover_path)"
+                    class="w-full h-full object-cover" />
+                <svg v-else xmlns="http://www.w3.org/2000/svg" class="w-20 h-20 text-base-content/20" fill="none"
                     viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
@@ -20,13 +21,21 @@
             </div>
 
             <div class="ml-auto pb-2 flex gap-2">
+                <button class="btn btn-primary btn-sm" @click="openEditModal">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    Editar
+                </button>
                 <button class="btn btn-error btn-sm" @click="deletePlaylist">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
-                    Eliminar Playlist
+                    Eliminar
                 </button>
             </div>
         </div>
@@ -49,20 +58,10 @@
 
             <RecycleScroller class="scroller h-full pr-1" :items="tracks" :item-size="64" key-field="path"
                 v-slot="{ item: track, index }">
-                <div class="relative group flex w-full">
-                    <SongRow class="flex-1" :track="track" :index="index" :is-active="currentTrack?.path === track.path"
-                        :is-favorite="track.is_favorite" @play="playTrack(track)" />
-                    <!-- Delete from playlist button overlay -->
-                    <button
-                        class="absolute right-14 top-1/2 -translate-y-1/2 btn btn-ghost btn-xs btn-circle text-error opacity-0 group-hover:opacity-100 transition-opacity"
-                        title="Quitar de la Playlist" @click.stop="removeSong(track)">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
+                <!-- Replace the removed overlay with normal SongRow -->
+                <SongRow :track="track" :index="index" :is-active="currentTrack?.path === track.path"
+                    :is-favorite="track.is_favorite" :playlist-id="playlistId" @play="playTrack(track)"
+                    @toggleFavorite="toggleFavorite(track)" />
             </RecycleScroller>
         </div>
 
@@ -75,13 +74,58 @@
         <div v-else class="flex-1 flex items-center justify-center">
             <span class="loading loading-spinner text-primary loading-lg"></span>
         </div>
+
+        <!-- Edit Modal -->
+        <dialog id="edit_playlist_modal" class="modal">
+            <div class="modal-box bg-base-200">
+                <h3 class="font-bold text-lg mb-4">Editar Playlist</h3>
+                <div class="form-control mb-4">
+                    <label class="label">
+                        <span class="label-text">Nombre de la Playlist</span>
+                    </label>
+                    <input type="text" v-model="editPlaylistName" placeholder="Escribe el nombre aquí"
+                        class="input input-bordered w-full" @keyup.enter="savePlaylistEdits" />
+                </div>
+                <div class="form-control mb-4">
+                    <label class="label">
+                        <span class="label-text">Portada (Imagen)</span>
+                    </label>
+                    <div class="flex items-center gap-4">
+                        <div
+                            class="w-16 h-16 bg-base-300 rounded overflow-hidden shrink-0 border border-base-content/10">
+                            <img v-if="editPlaylistCover" :src="convertFileSrc(editPlaylistCover)"
+                                class="w-full h-full object-cover" />
+                            <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-full w-full opacity-30 p-4"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <button class="btn btn-sm btn-outline btn-info" @click="selectPlaylistImage">Buscar
+                            Imagen</button>
+                        <button class="btn btn-sm btn-ghost text-error" v-if="editPlaylistCover"
+                            @click="editPlaylistCover = null">Quitar</button>
+                    </div>
+                </div>
+                <div class="modal-action">
+                    <form method="dialog">
+                        <button class="btn mr-2" @click="closeEditModal">Cancelar</button>
+                        <button class="btn btn-primary" @click.prevent="savePlaylistEdits">Guardar</button>
+                    </form>
+                </div>
+            </div>
+            <form method="dialog" class="modal-backdrop">
+                <button @click="closeEditModal">close</button>
+            </form>
+        </dialog>
     </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { invoke } from '@tauri-apps/api/core'
+import { invoke, convertFileSrc } from '@tauri-apps/api/core'
+import { open } from '@tauri-apps/plugin-dialog'
 import { useSettingsStore } from '../store/settings'
 import { usePlayerStore } from '../store/player'
 import { RecycleScroller } from 'vue-virtual-scroller'
@@ -98,6 +142,10 @@ const playlist = ref(null)
 const tracks = ref([])
 const loading = ref(false)
 const error = ref('')
+
+// Editing state
+const editPlaylistName = ref('')
+const editPlaylistCover = ref(null)
 
 const currentTrack = computed(() => playerStore.currentTrack)
 
@@ -146,13 +194,87 @@ async function removeSong(track) {
     }
 }
 
+function handlePlaylistElementRemoved(e) {
+    if (e.detail.playlistId === playlistId.value) {
+        tracks.value = tracks.value.filter(t => t.id !== e.detail.songId);
+    }
+}
+
+function openEditModal() {
+    if (playlist.value) {
+        editPlaylistName.value = playlist.value.name;
+        editPlaylistCover.value = playlist.value.cover_path;
+        document.getElementById('edit_playlist_modal').showModal();
+    }
+}
+
+function closeEditModal() {
+    document.getElementById('edit_playlist_modal').close();
+}
+
+async function selectPlaylistImage() {
+    try {
+        const selected = await open({
+            multiple: false,
+            filters: [{
+                name: 'Imágenes',
+                extensions: ['png', 'jpg', 'jpeg', 'webp']
+            }]
+        });
+        if (selected) {
+            editPlaylistCover.value = selected;
+        }
+    } catch (e) {
+        console.error(e)
+    }
+}
+
+async function savePlaylistEdits() {
+    try {
+        await invoke("update_playlist", {
+            playlistId: playlistId.value,
+            name: editPlaylistName.value.trim() || "Nueva Playlist",
+            coverPath: editPlaylistCover.value
+        });
+        closeEditModal();
+        await loadData();
+
+        // Disparar recarga de menús nativos usando un hack (mutando la activeProfileId o recarga global indirecta si fuera necesario)
+        window.dispatchEvent(new CustomEvent('playlists-updated'));
+    } catch (e) {
+        console.error("No se pudo actualizar la playlist: ", e);
+    }
+}
+
 function playTrack(track) {
     playerStore.setPlaylist(tracks.value)
     playerStore.play(track)
 }
 
+async function toggleFavorite(track) {
+    if (track.is_favorite) {
+        await invoke("remove_favorite", {
+            songId: track.id,
+            profileId: settingsStore.activeProfileId
+        })
+        track.is_favorite = false
+    } else {
+        await invoke("add_favorite", {
+            songId: track.id,
+            profileId: settingsStore.activeProfileId
+        })
+        track.is_favorite = true
+    }
+    tracks.value = [...tracks.value]
+}
+
 onMounted(() => {
     loadData()
+    window.addEventListener('song-removed-from-playlist', handlePlaylistElementRemoved)
+})
+
+onUnmounted(() => {
+    window.removeEventListener('song-removed-from-playlist', handlePlaylistElementRemoved)
 })
 
 watch(() => route.params.id, () => {

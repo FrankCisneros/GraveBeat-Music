@@ -176,7 +176,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { invoke } from '@tauri-apps/api/core'
 import { useSettingsStore } from '../store/settings'
 
@@ -222,6 +222,11 @@ async function submitCreatePlaylist() {
 // Ensure playlists are refetched when the profile changes or loaded first time
 onMounted(() => {
     loadPlaylists()
+    window.addEventListener('playlists-updated', loadPlaylists)
+})
+
+onUnmounted(() => {
+    window.removeEventListener('playlists-updated', loadPlaylists)
 })
 
 watch(() => settingsStore.activeProfileId, () => {

@@ -11,6 +11,7 @@ export const usePlayerStore = defineStore("player", () => {
     const currentIndex = ref(savedIndex ? parseInt(savedIndex) : 0)
 
     const currentTrack = ref(playlist.value.length > 0 ? playlist.value[currentIndex.value] : null)
+    const recentTracks = ref([])
     const isPlaying = ref(false)
     const repeat = ref(false)
     const shuffle = ref(false)
@@ -190,6 +191,19 @@ export const usePlayerStore = defineStore("player", () => {
 
         currentTrack.value = trackToPlay
 
+        // Evitamos canciones duplicadas moviendo siempre la canción al principio
+        const existingRecentIndex = recentTracks.value.findIndex(t => t.path === trackToPlay.path)
+        if (existingRecentIndex !== -1) {
+            recentTracks.value.splice(existingRecentIndex, 1)
+        }
+
+        recentTracks.value.unshift(trackToPlay)
+
+        // Optional limit, maybe 100 recent songs
+        if (recentTracks.value.length > 100) {
+            recentTracks.value.pop()
+        }
+
         // Create new Howl
         // Note: html5 must be false for Web Audio API EQ to work
         sound = new Howl({
@@ -264,6 +278,22 @@ export const usePlayerStore = defineStore("player", () => {
         play()
     }
 
+    function addNext(track) {
+        if (!playlist.value.length) {
+            playlist.value = [track]
+            currentIndex.value = 0
+            return play()
+        }
+        const existingId = playlist.value.findIndex(t => t.path === track.path)
+        if (existingId !== -1) {
+            playlist.value.splice(existingId, 1)
+            if (existingId < currentIndex.value) {
+                currentIndex.value--
+            }
+        }
+        playlist.value.splice(currentIndex.value + 1, 0, track)
+    }
+
     function prev() {
         if (!playlist.value.length) return
         currentIndex.value =
@@ -328,6 +358,7 @@ export const usePlayerStore = defineStore("player", () => {
 
     return {
         currentTrack,
+        recentTracks,
         isPlaying,
         volume,
         playlist,
@@ -350,6 +381,7 @@ export const usePlayerStore = defineStore("player", () => {
         setVolume,
         setEQ,
         applyPreset,
-        seek
+        seek,
+        addNext
     }
 })
