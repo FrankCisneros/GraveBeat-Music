@@ -28,3 +28,5 @@ base64 = "0.22.1"
 walkdir = "2.3"
 rayon = "1.5.1"
 log = "0.4.27"
+
+sea-orm = { version = "2.0.0-rc", features = ["sqlx-sqlite", "runtime-tokio-rustls", "macros", "with-json", "debug-print"] }

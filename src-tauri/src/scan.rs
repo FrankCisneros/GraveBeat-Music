@@ -1,6 +1,6 @@
-use lofty::file::{ TaggedFileExt, AudioFile };
+use lofty::file::{AudioFile, TaggedFileExt};
 use lofty::probe::Probe;
-use lofty::tag::{Accessor, TagExt};
+use lofty::tag::Accessor;
 use rayon::prelude::*;
 use serde::Serialize;
 use std::time::Instant;
@@ -14,7 +14,7 @@ pub struct TrackMetadata {
     pub title: Option<String>,
     pub artist: Option<String>,
     pub album: Option<String>,
-    pub duration: Option<u64>,           // segundos
+    pub duration: Option<u64>,
     pub cover_data_url: Option<String>,
 }
 
@@ -68,22 +68,24 @@ pub fn scan_folder(path: String) -> Vec<TrackMetadata> {
             // Obtener el tag (title/artist/album) y la carátula
             let tag_opt = tagged_file.primary_tag();
 
-            let (title, artist, album, cover_data_url) = tag_opt.map(|tag| {
-                let title = tag.title().map(String::from);
-                let artist = tag.artist().map(String::from);
-                let album = tag.album().map(String::from);
+            let (title, artist, album, cover_data_url) = tag_opt
+                .map(|tag| {
+                    let title = tag.title().map(String::from);
+                    let artist = tag.artist().map(String::from);
+                    let album = tag.album().map(String::from);
 
-                let cover_data_url = tag.pictures().first().map(|pic| {
-                    let mime = pic
-                        .mime_type()
-                        .map(|m| m.to_string())
-                        .unwrap_or_else(|| "application/octet-stream".into());
-                    let b64 = base64::encode(pic.data());
-                    format!("data:{mime};base64,{b64}")
-                });
+                    let cover_data_url = tag.pictures().first().map(|pic| {
+                        let mime = pic
+                            .mime_type()
+                            .map(|m| m.to_string())
+                            .unwrap_or_else(|| "application/octet-stream".into());
+                        let b64 = base64::encode(pic.data());
+                        format!("data:{mime};base64,{b64}")
+                    });
 
-                (title, artist, album, cover_data_url)
-            }).unwrap_or((None, None, None, None));
+                    (title, artist, album, cover_data_url)
+                })
+                .unwrap_or((None, None, None, None));
 
             Some(TrackMetadata {
                 name,

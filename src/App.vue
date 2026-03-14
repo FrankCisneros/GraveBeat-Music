@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col h-screen" :data-theme="temaActual">
+  <div class="flex flex-col h-screen">
     <!-- Navbar superior -->
     <nav class="navbar bg-base-200 px-6 py-4 shadow-sm flex-shrink-0">
       <div class="flex-1">

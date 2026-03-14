@@ -4,7 +4,7 @@ import Library from "../pages/Library.vue"
 import files from "../pages/files.vue"
 import Album from "../pages/Album.vue"
 // import NowPlaying from "../pages/NowPlaying.vue"
-// import Settings from "../pages/Settings.vue"
+import Settings from "../pages/Settings.vue"
 // import About from "../pages/About.vue"
 
 const routes = [
@@ -12,6 +12,7 @@ const routes = [
     { path: "/library", component: Library },
     { path: "/album", component: Album },
     { path: "/files", component: files },
+    { path: "/settings", component: Settings },
 ]
 
 const router = createRouter({
