@@ -1,5 +1,255 @@
 @import "tailwindcss";
 
 @plugin "daisyui" {
-    themes: light, dark, cupcake, winter, night, emerald, corporate, forest, dracula;
+    themes: all;
+}
+
+body {
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+}
+
+/* Forzar renderizado de píxeles en toda la app */
+* {
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
+
+@plugin "daisyui/theme" {
+    name: "NeonOverdrive";
+    default: true;
+    prefersdark: true;
+    color-scheme: dark;
+
+    --color-base-100: oklch(15% 0.05 310);
+    --color-base-200: oklch(12% 0.05 310);
+    --color-base-300: oklch(10% 0.05 310);
+    --color-base-content: oklch(95% 0.05 310);
+
+    --color-primary: oklch(70% 0.3 330);
+    /* Magenta Neón */
+    --color-primary-content: oklch(20% 0.1 330);
+    --color-secondary: oklch(75% 0.3 190);
+    /* Cyan Neón */
+    --color-secondary-content: oklch(20% 0.1 190);
+    --color-accent: oklch(85% 0.25 100);
+    /* Amarillo/Verde Lima */
+    --color-accent-content: oklch(20% 0.1 100);
+
+    --radius-selector: 1rem;
+    --radius-field: 0.5rem;
+    --radius-box: 1rem;
+    --border: 2px;
+    /* Bordes marcados para el estilo Cyberpunk */
+}
+
+@plugin "daisyui/theme" {
+    name: "TokyoNight";
+    default: true;
+    prefersdark: true;
+    color-scheme: dark;
+
+    --color-base-100: oklch(23% 0.04 270);
+    --color-base-200: oklch(20% 0.04 270);
+    --color-base-300: oklch(18% 0.04 270);
+    --color-base-content: oklch(90% 0.02 270);
+
+    --color-primary: oklch(65% 0.15 280);
+    /* Púrpura suave */
+    --color-secondary: oklch(70% 0.12 210);
+    /* Azul acero */
+    --color-accent: oklch(80% 0.15 170);
+    /* Teal/Verde agua */
+
+    --radius-selector: 0.5rem;
+    --radius-field: 0.25rem;
+    --radius-box: 0.5rem;
+    --border: 1px;
+}
+
+@plugin "daisyui/theme" {
+    name: "TokyoNightGhost";
+    default: true;
+    prefersdark: true;
+    color-scheme: dark;
+
+    /* Colores idénticos a Tokyo Night */
+    --color-base-100: oklch(23% 0.04 270);
+    --color-base-200: oklch(20% 0.04 270);
+    --color-base-300: oklch(18% 0.04 270);
+    --color-base-content: oklch(90% 0.02 270);
+    --color-primary: oklch(65% 0.15 280);
+    --color-secondary: oklch(70% 0.12 210);
+    --color-accent: oklch(80% 0.15 170);
+
+    /* Estética sin bordes */
+    --radius-selector: 0.5rem;
+    --radius-field: 0.25rem;
+    --radius-box: 0.5rem;
+    --border: 0px;
+    --depth: 0;
+    /* Menos sombra para un efecto más plano */
+}
+
+@plugin "daisyui/theme" {
+    name: "VelvetMist";
+    default: true;
+    prefersdark: true;
+    color-scheme: dark;
+
+    --color-base-100: oklch(20% 0.02 20);
+    --color-base-200: oklch(17% 0.02 20);
+    --color-base-300: oklch(15% 0.02 20);
+    --color-base-content: oklch(92% 0.02 20);
+
+    --color-primary: oklch(60% 0.12 10);
+    /* Rosa viejo / Coral */
+    --color-secondary: oklch(50% 0.08 30);
+    /* Marrón suave */
+    --color-accent: oklch(85% 0.1 70);
+    /* Crema */
+
+    --radius-selector: 1.5rem;
+    --radius-field: 0.5rem;
+    --radius-box: 1rem;
+    --border: 0px;
+    --depth: 1;
+    /* Un poco de profundidad para compensar la falta de bordes */
+}
+
+
+@plugin "daisyui/theme" {
+    name: "gaming";
+    default: true;
+    prefersdark: true;
+    color-scheme: dark;
+
+    /* Base backgrounds */
+    --color-base-100: #0f0f17;
+    /* vt-c-black */
+    --color-base-200: #161622;
+    /* vt-c-black-soft */
+    --color-base-300: #1e1e2e;
+    /* vt-c-black-mute */
+    --color-base-content: #f8fafc;
+    /* vt-c-text-dark-1 */
+
+    /* Primary – Indigo */
+    --color-primary: #3b82f6;
+    /* vt-c-indigo */
+    --color-primary-content: #ffffff;
+
+    /* Secondary – Purple */
+    --color-secondary: #8b5cf6;
+    /* vt-c-purple */
+    --color-secondary-content: #ffffff;
+
+    /* Accent – Cyan */
+    --color-accent: #06b6d4;
+    /* vt-c-cyan */
+    --color-accent-content: #0f172a;
+
+    /* Neutral – muted dark */
+    --color-neutral: #1e1e2e;
+    --color-neutral-content: #f8fafc;
+
+    /* Info */
+    --color-info: #38bdf8;
+    --color-info-content: #0f172a;
+
+    /* Success – Emerald */
+    --color-success: #10b981;
+    --color-success-content: #022c22;
+
+    /* Warning */
+    --color-warning: #facc15;
+    --color-warning-content: #1c1917;
+
+    /* Error – Rose */
+    --color-error: #f43f5e;
+    --color-error-content: #ffffff;
+
+    /* Radius (launcher vibes) */
+    --radius-selector: 0.75rem;
+    --radius-field: 0.5rem;
+    --radius-box: 1rem;
+
+    /* Sizes */
+    --size-selector: 0.25rem;
+    --size-field: 0.25rem;
+
+    /* Borders */
+    --border: 1px;
+
+    /* Depth & noise */
+    --depth: 1;
+    --noise: 0;
+}
+
+@plugin "daisyui/theme" {
+    name: "neon-dark";
+    default: true;
+    prefersdark: true;
+    color-scheme: dark;
+
+    /* Base backgrounds */
+    --color-base-100: oklch(20% 0.06 285);
+    /* fondo principal */
+    --color-base-200: oklch(24% 0.07 285);
+    /* cards */
+    --color-base-300: oklch(28% 0.08 285);
+    /* hover / elevaciones */
+    --color-base-content: oklch(96% 0.01 285);
+
+    /* Primary (botón Editar / acentos violetas) */
+    --color-primary: oklch(60% 0.22 285);
+    --color-primary-content: oklch(98% 0.01 285);
+
+    /* Secondary (cyan / info visual) */
+    --color-secondary: oklch(70% 0.20 210);
+    --color-secondary-content: oklch(15% 0.05 210);
+
+    /* Accent (verde / progreso / positivo) */
+    --color-accent: oklch(68% 0.22 150);
+    --color-accent-content: oklch(15% 0.05 150);
+
+    /* Neutral (textos secundarios / bordes) */
+    --color-neutral: oklch(35% 0.05 285);
+    --color-neutral-content: oklch(95% 0.01 285);
+
+    /* Info (HLTB Main + Extra) */
+    --color-info: oklch(72% 0.22 200);
+    --color-info-content: oklch(15% 0.05 200);
+
+    /* Success (rating positivo / completado) */
+    --color-success: oklch(65% 0.25 145);
+    --color-success-content: oklch(15% 0.05 145);
+
+    /* Warning (pendiente / replaying) */
+    --color-warning: oklch(78% 0.22 85);
+    --color-warning-content: oklch(20% 0.05 85);
+
+    /* Error (Eliminar) */
+    --color-error: oklch(58% 0.28 25);
+    --color-error-content: oklch(98% 0.01 25);
+
+    /* Border radius (soft gaming UI) */
+    --radius-selector: 1rem;
+    --radius-field: 0.5rem;
+    --radius-box: 1.25rem;
+
+    /* Base sizes */
+    --size-selector: 0.25rem;
+    --size-field: 0.25rem;
+
+    /* Border */
+    --border: 1px;
+
+    /* Effects */
+    --depth: 1;
+    --noise: 0;
 }

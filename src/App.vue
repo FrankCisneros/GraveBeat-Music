@@ -1,219 +1,197 @@
 <template>
-  <div class="flex flex-col h-screen">
-    <!-- Navbar superior -->
-    <nav class="navbar bg-base-200 px-6 py-4 shadow-sm flex-shrink-0">
-      <div class="flex-1">
-        <a class="text-xl font-bold">🎵 MusicApp</a>
-      </div>
-      <div class="flex items-center space-x-4 ">
-        
-        <!-- Barra de búsqueda -->
-        <div class="form-control">
-          <div class="input-group">
-            <input type="text" placeholder="Search songs, artists..." class="input input-bordered input-sm w-64 border-0 focus:outline-none justify-center" />
-            <button class="btn btn-square btn-sm">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </button>
-          </div>
-        </div>
+  <div class="flex flex-col h-screen overflow-hidden" :data-theme="temaActual">
 
-        <!-- Perfil y notificaciones -->
-        <div class="dropdown dropdown-end">
-          <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
-            <div class="w-8 rounded-full bg-blue-500 flex items-center justify-center">
-              <span class="text-white text-sm font-bold">U</span>
-            </div>
-          </div>
-          <ul tabindex="0" class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
-            <li><a>Profile</a></li>
-            <li><a>Settings</a></li>
-            <li><a>Logout</a></li>
-          </ul>
-        </div>
+    <NavigationBar v-model="temaActual" :temas="temas" />
 
-        <!-- Selector de tema -->
-        <select v-model="temaActual" class="select select-bordered select-sm w-32 focus:outline-none">
-          <option disabled>Theme</option>
-          <option v-for="t in temas" :key="t" :value="t">{{ t }}</option>
-        </select>
-        <button class="btn btn-outline btn-error" @click="closeApp">Close</button>
-      </div>
-    </nav>
+    <div class="flex flex-1 min-h-0 relative">
+      <Sidebar />
 
-    <!-- Contenido principal con sidebar - Área que hace scroll -->
-    <div class="flex flex-1 min-h-0">
-      <!-- Sidebar lateral con scroll -->
-      <aside class="w-64 bg-base-100 border-r border-base-300 hidden md:flex flex-col">
-        <div class="p-6 flex-1 overflow-y-auto">
-          <!-- Navegación principal -->
-          <div class="space-y-2 mb-8">
-            <!-- Biblioteca -->
-            <router-link class="flex items-center space-x-3 p-3 rounded-lg hover:bg-base-200 transition-colors" to="/library">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-              </svg>
-              <span>Libreria</span>
-            </router-link>
-
-            <!-- Album -->
-            <router-link class="flex items-center space-x-3 p-3 rounded-lg hover:bg-base-200 transition-colors" to="/album">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4M4 4l8 4 8-4M4 8l8 4 8-4m-8 4v8" />
-              </svg>
-              <span>Albums</span>
-            </router-link>
-
-            <router-link class="flex items-center space-x-3 p-3 rounded-lg hover:bg-base-200 transition-colors" to="/now-playing">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <span>Now Playing</span>
-            </router-link>
-            
-            <router-link class="flex items-center space-x-3 p-3 rounded-lg hover:bg-base-200 transition-colors" to="/settings">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              <span>Settings</span>
-            </router-link>
-            
-            <router-link class="flex items-center space-x-3 p-3 rounded-lg hover:bg-base-200 transition-colors" to="/about">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <span>About</span>
-            </router-link>
-          </div>
-
-          <!-- Playlists -->
-          <div class="mt-8">
-            <h2 class="text-lg font-semibold mb-4 text-gray-600">Your Playlists</h2>
-            <ul class="space-y-2">
-              <li>
-                <a href="#" class="flex items-center space-x-3 p-2 rounded-lg hover:bg-base-200 transition-colors group">
-                  <div class="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                    </svg>
-                  </div>
-                  <span class="group-hover:text-blue-500 transition-colors">Favorites</span>
-                </a>
-              </li>
-              <li>
-                <a href="#" class="flex items-center space-x-3 p-2 rounded-lg hover:bg-base-200 transition-colors group">
-                  <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-cyan-500 rounded flex items-center justify-center">
-                    <span class="text-white text-xs">CV</span>
-                  </div>
-                  <span class="group-hover:text-blue-500 transition-colors">Chill Vibes</span>
-                </a>
-              </li>
-              <li>
-                <a href="#" class="flex items-center space-x-3 p-2 rounded-lg hover:bg-base-200 transition-colors group">
-                  <div class="w-8 h-8 bg-gradient-to-br from-red-500 to-orange-500 rounded flex items-center justify-center">
-                    <span class="text-white text-xs">WM</span>
-                  </div>
-                  <span class="group-hover:text-blue-500 transition-colors">Workout Mix</span>
-                </a>
-              </li>
-              <li>
-                <a href="#" class="flex items-center space-x-3 p-2 rounded-lg hover:bg-base-200 transition-colors group">
-                  <div class="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-500 rounded flex items-center justify-center">
-                    <span class="text-white text-xs">TH</span>
-                  </div>
-                  <span class="group-hover:text-blue-500 transition-colors">Top Hits</span>
-                </a>
-              </li>
-              <!-- Playlists adicionales para demostrar el scroll -->
-              <li>
-                <a href="#" class="flex items-center space-x-3 p-2 rounded-lg hover:bg-base-200 transition-colors group">
-                  <div class="w-8 h-8 bg-gradient-to-br from-yellow-500 to-orange-500 rounded flex items-center justify-center">
-                    <span class="text-white text-xs">RM</span>
-                  </div>
-                  <span class="group-hover:text-blue-500 transition-colors">Road Trip</span>
-                </a>
-              </li>
-              <li>
-                <a href="#" class="flex items-center space-x-3 p-2 rounded-lg hover:bg-base-200 transition-colors group">
-                  <div class="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-500 rounded flex items-center justify-center">
-                    <span class="text-white text-xs">SM</span>
-                  </div>
-                  <span class="group-hover:text-blue-500 transition-colors">Study Mix</span>
-                </a>
-              </li>
-              <li>
-                <a href="#" class="flex items-center space-x-3 p-2 rounded-lg hover:bg-base-200 transition-colors group">
-                  <div class="w-8 h-8 bg-gradient-to-br from-pink-500 to-rose-500 rounded flex items-center justify-center">
-                    <span class="text-white text-xs">PM</span>
-                  </div>
-                  <span class="group-hover:text-blue-500 transition-colors">Party Mix</span>
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          <!-- Nueva playlist -->
-          <button class="btn btn-ghost btn-sm w-full mt-6 justify-start space-x-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-            </svg>
-            <span>New Playlist</span>
-          </button>
-        </div>
-      </aside>
-
-      <!-- Área principal circular con scroll -->
-      <main class="flex-1 min-h-0 p-4">
-        <div class="rounded-[3rem] bg-gradient-to-br from-base-200 to-base-300 h-full p-8 shadow-xl overflow-y-auto">
+      <main class="flex-1 min-h-0 transition-all duration-300" :class="{ 'mr-80': isDetailsVisible }">
+        <div class="rounded-4x1 p-1 h-full shadow-xl overflow-y-auto bg-linear-to-br from-base-100 to-base-300">
           <router-view />
         </div>
       </main>
+
+      <SongDetailsSidebar :visible="isDetailsVisible" :track="currentTrack" @close="isDetailsVisible = false" />
     </div>
 
-    <!-- Player fijo en la parte inferior -->
-    <footer class="bg-base-300 border-t border-base-200 flex-shrink-0">
+    <footer class="bg-linear-to-br from-base-100 to-base-300 border-t border-base-200 shrink-0 z-50">
       <PlayerControls />
     </footer>
+
+    <ContextMenu />
+
+    <!-- Global Scanning Modal -->
+    <dialog class="modal" :class="{ 'modal-open': isScanning }">
+      <div class="modal-box text-center">
+        <h3 class="font-bold text-lg mb-2">Escaneando Biblioteca</h3>
+        <p class="text-sm opacity-70 truncate mb-4">{{ scanMessage }}</p>
+
+        <div class="w-full bg-base-200 rounded-full h-4 mb-2 overflow-hidden border border-base-300">
+          <div class="bg-primary h-full transition-all duration-300" :style="{ width: percent + '%' }"></div>
+        </div>
+
+        <p class="font-mono text-sm">{{ scanProgress }} / {{ scanTotal }} canciones</p>
+      </div>
+    </dialog>
+
+    <!-- Global Playlist Modal -->
+    <dialog class="modal modal-bottom sm:modal-middle" :class="{ 'modal-open': uiStore.playlistModal.visible }">
+      <div class="modal-box relative">
+        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+          @click="uiStore.hidePlaylistModal()">✕</button>
+        <h3 class="font-bold text-lg mb-4">Agregar a Playlist</h3>
+        <p class="text-sm mb-4 opacity-80">Selecciona o crea una playlist para agregar <br> <span
+            class="text-primary font-bold">{{ uiStore.playlistModal.track?.title || uiStore.playlistModal.track?.name
+            }}</span></p>
+
+        <div v-if="playlists.length === 0" class="text-center py-4 opacity-50 text-sm">
+          No tienes playlists.
+        </div>
+
+        <div class="max-h-60 overflow-y-auto mb-4 custom-scroll">
+          <button v-for="pl in playlists" :key="pl.id"
+            class="w-full text-left px-4 py-3 hover:bg-base-200 text-sm transition-colors border-b border-base-200 last:border-0 rounded-lg"
+            @click="addToPlaylist(pl.id)">
+            <div class="font-semibold">{{ pl.name }}</div>
+          </button>
+        </div>
+      </div>
+      <form method="dialog" class="modal-backdrop" @click="uiStore.hidePlaylistModal()">
+        <button>Cerrar</button>
+      </form>
+    </dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, watch } from "vue"
-import PlayerControls from "./components/PlayerControls.vue"
+import { ref, computed, watch, onMounted } from "vue";
+import NavigationBar from "./components/NavigationBar.vue";
+import PlayerControls from "./components/PlayerControls.vue";
+import Sidebar from "./components/Sidebar.vue";
+import SongDetailsSidebar from "./components/SongDetailsSidebar.vue";
+import ContextMenu from "./components/ContextMenu.vue";
+import { useSettingsStore } from "./store/settings";
+import { usePlayerStore } from "./store/player";
+import { useUIStore } from "./store/ui";
+import { storeToRefs } from "pinia";
 import { getCurrentWindow } from '@tauri-apps/api/window';
+import { invoke } from "@tauri-apps/api/core";
+import { register } from '@tauri-apps/plugin-global-shortcut';
 
-const temas = ["light", "dark", "cupcake", "winter", "night", "emerald", "forest", "dracula"]
-const temaActual = ref(localStorage.getItem("tema") || "cupcake")
+const settingsStore = useSettingsStore()
+const playerStore = usePlayerStore()
+const uiStore = useUIStore()
 
-watch(temaActual, (nuevo) => {
-  document.documentElement.setAttribute("data-theme", nuevo)
-  localStorage.setItem("tema", nuevo)
+const { isDetailsVisible, currentTrack } = storeToRefs(playerStore)
+const { isScanning, scanProgress, scanTotal, scanMessage } = storeToRefs(settingsStore)
+
+const percent = computed(() => {
+  if (scanTotal.value === 0) return 0;
+  return Math.min(100, (scanProgress.value / scanTotal.value) * 100);
 })
 
-async function closeApp() {
-  await getCurrentWindow().close();
+const playlists = ref([])
+
+watch(() => uiStore.playlistModal.visible, async (visible) => {
+  if (visible) {
+    try {
+      playlists.value = await invoke("get_playlists", { profileId: settingsStore.activeProfileId })
+    } catch (e) {
+      console.error(e)
+    }
+  }
+})
+
+const addToPlaylist = async (playlistId) => {
+  if (!uiStore.playlistModal.track) return;
+  try {
+    await invoke("add_song_to_playlist", {
+      playlistId,
+      songId: uiStore.playlistModal.track.id
+    });
+    uiStore.hidePlaylistModal();
+  } catch (e) {
+    alert("Ya está agregada o hubo un error.");
+  }
 }
+
+const temaActual = computed({
+  get: () => settingsStore.theme,
+  set: (value) => settingsStore.setTheme(value)
+})
+
+const temas = settingsStore.availableThemes
+
+onMounted(async () => {
+  // Set initial theme
+  document.documentElement.setAttribute("data-theme", settingsStore.theme)
+  // Show window after content is ready
+  await getCurrentWindow().show();
+
+  // Escaneo en inicio si la carpeta fue modificada
+  try {
+    const lastScanStr = localStorage.getItem(`lastScan_${settingsStore.activeProfileId}`) || "0";
+    const lastScan = parseInt(lastScanStr);
+
+    await settingsStore.loadFolders();
+    let needsScan = false;
+    for (const folder of settingsStore.folders) {
+      const isModified = await invoke("is_folder_modified", { path: folder, lastScan });
+      if (isModified) {
+        needsScan = true;
+        break;
+      }
+    }
+
+    if (needsScan) {
+      await settingsStore.performScan();
+    }
+  } catch (e) {
+    console.error("Error al comprobar modificaciones en las carpetas:", e);
+  }
+
+  // Teclas multimedia globales
+  try {
+    await register('MediaPlayPause', (event) => {
+      if (event.state === 'Pressed') playerStore.toggle();
+    });
+    await register('MediaTrackNext', (event) => {
+      if (event.state === 'Pressed') playerStore.next();
+    });
+    await register('MediaTrackPrevious', (event) => {
+      if (event.state === 'Pressed') playerStore.prev();
+    });
+  } catch (err) {
+    console.error("Error al registrar teclas multimedia locales globales:", err);
+  }
+
+  // Tecla espaciadora para reproducir/pausar (local en la ventana)
+  window.addEventListener('keydown', (e) => {
+    // Ignorar si el usuario está escribiendo en un input
+    const tag = document.activeElement?.tagName?.toLowerCase();
+    if (tag === 'input' || tag === 'textarea') return;
+
+    if (e.code === 'Space') {
+      e.preventDefault();
+      playerStore.toggle();
+    }
+  });
+})
+
+watch(temaActual, (nuevo) => {
+  document.documentElement.setAttribute("data-theme", nuevo);
+  settingsStore.setTheme(nuevo)
+});
 </script>
 
 <style scoped>
-.router-link-active {
-  background-color: hsl(var(--primary) / 1);
-  color: hsl(var(--primary-content) / 1);
-  font-weight: 500;
+.custom-scroll::-webkit-scrollbar {
+  width: 4px;
 }
 
-.rounded-\[3rem\] {
-  border-radius: 1rem;
-}
-
-/* Asegurar que ocupe toda la pantalla */
-html, body, #app {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
+.custom-scroll::-webkit-scrollbar-thumb {
+  background: #52525b;
+  border-radius: 4px;
 }
 </style>

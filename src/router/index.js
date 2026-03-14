@@ -1,18 +1,31 @@
 import { createRouter, createWebHistory } from "vue-router"
 
 import Library from "../pages/Library.vue"
-import files from "../pages/files.vue"
 import Album from "../pages/Album.vue"
-// import NowPlaying from "../pages/NowPlaying.vue"
+import AlbumSong from "../pages/AlbumSong.vue"
 import Settings from "../pages/Settings.vue"
-// import About from "../pages/About.vue"
+import Artists from "../pages/Artists.vue"
+import ArtistDetails from "../pages/ArtistDetails.vue"
+import Favorites from "../pages/favorites.vue"
+import Test from "../pages/Test.vue"
+import Playlist from "../pages/Playlist.vue"
+import Search from "../pages/Search.vue"
+import RecentActivity from "../pages/RecentActivity.vue"
 
 const routes = [
     { path: "/", redirect: "/library" },
     { path: "/library", component: Library },
     { path: "/album", component: Album },
-    { path: "/files", component: files },
     { path: "/settings", component: Settings },
+    { path: "/favorites", component: Favorites },
+    { path: "/album/:name", component: AlbumSong },
+
+    { path: "/artists", component: Artists },
+    { path: "/artists/:name", name: "ArtistDetails", component: ArtistDetails },
+    { path: "/playlist/:id", component: Playlist },
+    { path: "/search", component: Search },
+    { path: "/recent", component: RecentActivity },
+    { path: "/test", component: Test }
 ]
 
 const router = createRouter({

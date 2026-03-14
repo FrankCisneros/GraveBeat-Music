@@ -7,22 +7,32 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build",
+    "clean": "if exist \"src-tauri\\target\" rmdir /s /q \"src-tauri\\target\""
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.16",
     "@tauri-apps/api": "^2.9.0",
+    "@tauri-apps/plugin-dialog": "~2.2.0",
+    "@tauri-apps/plugin-fs": "~2.4.5",
+    "@tauri-apps/plugin-global-shortcut": "^2.3.1",
     "@tauri-apps/plugin-opener": "^2.5.2",
     "@tauri-apps/plugin-shell": "^2.3.3",
+    "@tauri-apps/plugin-sql": "~2.3.1",
     "@tauri-apps/plugin-window": "2.0.0-alpha.1",
     "axios": "^1.13.1",
     "daisyui": "^5.4.2",
+    "howler": "^2.2.4",
     "install": "^0.13.0",
     "music-metadata": "^11.9.0",
     "pinia": "^3.0.3",
     "tailwindcss": "^4.1.16",
     "vue": "^3.5.22",
-    "vue-router": "^4.6.3"
+    "vue-advanced-cropper": "^2.8.9",
+    "vue-router": "^4.6.3",
+    "vue-virtual-scroller": "2.0.0-beta.8"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2.9.2",
