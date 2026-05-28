@@ -2,11 +2,11 @@
     "$schema": "https://schema.tauri.app/config/2",
     "productName": "distro-m",
     "version": "0.1.0",
-    "identifier": "DistroMusic",
+    "identifier": "graveking.distromusic.app",
     "build": {
-        "beforeDevCommand": "pnpm dev",
+        "beforeDevCommand": "bun run dev",
         "devUrl": "http://localhost:5173",
-        "beforeBuildCommand": "pnpm build",
+        "beforeBuildCommand": "bun run build",
         "frontendDist": "../dist"
     },
     "app": {
